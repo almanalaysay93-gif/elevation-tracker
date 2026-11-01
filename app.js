@@ -153,7 +153,7 @@
   };
 
   // Built-in Apps Script /exec so every device connects without Setup. A URL saved in Setup still overrides it.
-  const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbwYgjZYVIl4YzE95QJL04ifv_ZTfV0ssYq4GcQDseXW-67WaLKMkGj27Ts4j-CwFZ_z/exec';
+  const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbzE0Q_zEAet209Xq9_7y0PlZF3ksrOwnVKVOQEiqmTV2NqPZ6s2PQ2DNyILIxgCcPT2/exec';
   const apiUrl = () => ls.get('apiUrl', '') || DEFAULT_API_URL;
   const isDemo = () => !apiUrl();
 
