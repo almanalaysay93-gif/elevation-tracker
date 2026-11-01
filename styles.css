@@ -256,6 +256,10 @@ select option, select optgroup { background: var(--surface); color: var(--text);
   padding: var(--s-4) 0; border-bottom: 1px solid var(--line);
 }
 .sets li:last-child { border-bottom: 0; }
+@media (max-width: 479px) {
+  .sets li { min-height: 60px; padding: var(--s-5) 0; gap: var(--s-4); }
+  .sets li > span:first-child { line-height: 1.4; }
+}
 .del { min-width: var(--touch-min); min-height: var(--touch-min); background: var(--surface-2); border: 1px solid var(--control); border-radius: var(--r-md); color: var(--muted); box-shadow: var(--elev-control); }
 .del:hover { color: var(--danger); border-color: var(--danger); }
 
