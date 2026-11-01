@@ -32,3 +32,30 @@ Revision cap: 2 rounds per agent. Tiebreak: user brief → anti-slop → cited p
 - Handoff decisions: load Chakra 600 + Inter 500; "Cal" label <360px; add "Undo" toast string; draw show_chart/insights/filled-star SVGs inline; calendar day-list <360px; checker verifies --text on --accent-soft live.
 - Wave 3 running in parallel: A2+A5 app rebuild (haiku; index.html, styles.css, app.js, sw.js, manifest.webmanifest, icons/) · scrollme intro (haiku; intro/) · designme reel (opus; hyperframes/).
 - Next: Wave 4 A12 snapshots after A2+A5 returns.
+
+## Checkpoint 4 — 2026-11-01 sign-in parallax
+
+Coordinator: Grok 4.7 in this session.
+`spawn_subagent` has no model parameter.
+Agents 0 to 15 were not spawned as separate processes.
+The coordinator wrote the page, the film source, and the skill notes.
+Agent 14 is NOT_APPLICABLE.
+There is no in-product AI.
+Agent 13 is BLOCKED.
+Deploy was not authorized.
+Design Arena is off.
+Browser MCP was not available.
+Headless Chrome on this PC was the check.
+Anything not run stays BLOCKED.
+
+Page files: `intro/index.html`, `intro/intro.css`, `intro/intro.js`.
+Notes: `intro/BRIEF.md`, `intro/PLAN.md`, `intro/references/CONTEXT.md`, `intro/QC_REPORT.md`, `intro/UX_LAWS_AUDIT.md`, `design/signin-brief.json`.
+Film source: `hyperframes/reel/index.html`.
+Render command: `npx --yes hyperframes@0.8.225 render` from `hyperframes/reel`.
+Exit code 0.
+Output: `hyperframes/reel/renders/reel_2026-11-01_19-56-45.mp4` (438,628 bytes, 8.0 s, 30 fps).
+Stable copy: `hyperframes/reel/output/final.mp4`.
+Lint reported 0 errors and 10 warnings.
+The render continued.
+Portrait file `hyperframes/output/final.mp4` is still 1,759,410 bytes, written 2026-11-01 1:09:47 pm.
+A root-folder render was started by mistake and killed before it wrote a file.

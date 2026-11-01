@@ -61,3 +61,21 @@ Evidence labels: **[V]** = fetched from the source's own page or repo. **[S]** =
 1. Do you want prefilled sets from your last session (Liftosaur-style "last results") as the default, or a blank form? This changes the logging screen layout.
 2. Is the weekly KPI score meant to be shown on the logging screen, or only on the Progress tab? No reference does this, so the placement is open.
 3. Should the share card show the KPI verdict (PROGRESS/HOLD/DIP) or only the lift numbers? Strong and Hevy share workouts, not weekly verdicts [V].
+
+
+---
+
+## Parallax landing references (agent-reach, 2026-11-01)
+
+Tools: agent-reach 1.6.1 — github (gh), web (exa), youtube (yt-dlp). Inspiration only; no code/assets copied without license check.
+
+| # | Source | Steal | Beat / Avoid |
+|---|---|---|---|
+| 1 | GSAP Observer fullpage — webdevpuneet.com/ui-snippets/observer-fullpage/ | Zero scroll height; wheel/touch/pointer → one intent; `tolerance` + animating lock (1 gesture = 1 scene); outgoing moves −18% + dims, incoming content lands 0.25s after background | Avoid plain vertical slide — we morph video (crossfade + scale push) instead |
+| 2 | tojoniainadina/slider-gsap-observer (GitHub) | Observer slider structure | No license verified → reference only |
+| 3 | Mouse-parallax layers — webdevpuneet.com/ui-snippets/hero-parallax-mouse-layers/ ; codepen JoshuaVB/ZErXjWx | One pointer source, per-layer depth multiplier, exponential smoothing (lerp, never snap) | Add gyro on phones; disable under reduced motion |
+| 4 | Codrops interactive WebGL hover / 3D depth parallax hero | Separate depth planes for floating 3D plates/barbell in empty half | No depth-map shader on video (cost) |
+| 5 | Wedelab glass tilt login ; Codrops 3D Glass Portal Card | perspective + backdrop-filter tilt card, specular sheen follows cursor | Avoid generic frosted-purple glassmorphism; use graphite metal + ember edge |
+| 6 | codrops/MagneticButtons (GitHub) | Magnetic pull on Google button, inner label moves further than shell | Keep official Google "G" mark + Google button branding rules |
+| 7 | Animorio drawing chart ; fwdtools chart snippets | stroke-dashoffset line draw, count-up total, pointer-follow tooltip | Label "Example progress" — no fake proof |
+| 8 | Awwwards: My Personal Best (Blacksmith) ; AFORM ; Exaloop | Athlete-data + big imagery pairing; Exaloop dark #0E0E0E + single loud accent | Accent = ember red from footage, not lime |

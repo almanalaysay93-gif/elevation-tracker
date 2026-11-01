@@ -1,0 +1,45 @@
+{
+  "name": "intro-signin-parallax",
+  "date": "2026-11-01",
+  "thesis": "A gym plate turns as you scroll. Sign in stays in the first view and returns at the end.",
+  "surface": "intro/",
+  "visualStyle": "Motorsport HUD / Volt telemetry",
+  "colors": {
+    "carbon": "#07090A",
+    "volt": "#C6FF00",
+    "cyan": "#00E5FF",
+    "plateIron": "#33373B",
+    "indexMark": "#C8161F"
+  },
+  "type": {
+    "display": "Chakra Petch",
+    "body": "Inter",
+    "numbers": "JetBrains Mono"
+  },
+  "motion": {
+    "owner": "one scroll progress value",
+    "uiMaxMs": 280,
+    "reduced": "static camera, opacity about 120ms"
+  },
+  "renderer": {
+    "page": "vanilla Three.js local module",
+    "film": "hyperframes",
+    "filmPath": "hyperframes/reel/",
+    "filmSpec": "1920x1080, 8s, silent, 16:9"
+  },
+  "optionalAgents": {
+    "remotion": false,
+    "hairline": false,
+    "motionmaxxing": false,
+    "opus5": false,
+    "img2threejs": false,
+    "ui-ux-pro-max": true
+  },
+  "antiSlop": [
+    "no purple gradient",
+    "no glassmorphism",
+    "no emoji icons",
+    "no ambient loop",
+    "no confetti"
+  ]
+}

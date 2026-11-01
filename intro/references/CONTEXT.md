@@ -1,31 +1,41 @@
-# Context and asset ledger: Elevation intro
+# References read for this pass
 
-## Sources read
-- `BUILD_BRIEF.md`: approved product brief. Scrollme is the intro story.
-- `DESIGN.md`, `design/style-spec.md`, `design/motion-doctrine.md`: volt telemetry style, motion limits, reduced-motion table.
-- `tokens.css`: colour, type, motion and touch tokens. The intro imports it from `../tokens.css`.
-- `VOICE.md`: voice rules, banned words, no exclamation marks, no em dashes in UI copy.
-- `copy/COPY.md`: intro.s1 to intro.s5 copy, intro.progress, intro CTA strings.
-- `index.html` (app root): hash routes `#settings` and the existing Google Fonts link.
+Access date: 2026-11-01.
+Observations below are from files opened in this workspace or from the Chrome check.
+No live web page was fetched for this list.
 
-## Procedural assets
-| Asset | Source | Licence | Notes |
-|---|---|---|---|
-| Barbell with plates and collars | Built in `intro.js` from Three.js primitives (Cylinder, EdgesGeometry) | Project code | No downloaded models, textures or images |
-| Fallback visual | `intro.css` shapes | Project code | Used when WebGL is absent or fails |
-| Favicon | Inline SVG data URI in `index.html` | Project code | Volt triangle |
+1. `assets/three.module.js` header.
+License: MIT.
+Copyright 2010-2026 Three.js Authors.
+The intro imports this local build.
+It does not load Three.js from a CDN.
 
-No binary assets are downloaded. No images or models are added to `intro/`.
+2. `app.js` sign-in block, about lines 1259 to 1350.
+The session object is `{ token, email, name, picture, exp }`.
+`signedIn` needs `token` and `exp` more than 30 seconds ahead.
+The intro writes that same shape.
 
-## External dependencies
-| Dependency | Version or URL | Licence | Load |
-|---|---|---|---|
-| Three.js | `three@0.160.0`, `cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js` (round 1; was the unminified build) | MIT | ES module, pinned exact version, released more than two weeks ago, loaded after load and idle |
-| Chakra Petch, Inter, JetBrains Mono | Google Fonts link already used by the app | SIL Open Font License | `fonts.googleapis.com` stylesheet |
+3. `tokens.css` and `DESIGN.md`.
+The live app tokens are red clay.
+`DESIGN.md` still locks volt `#C6FF00` on carbon `#07090A` with cyan `#00E5FF` edges.
+This page overrides `:root` so the intro stays on volt.
+The app screens keep `tokens.css`.
 
-Only CDNs on the allowed list are used (cdnjs, cdn.jsdelivr.net/npm/, unpkg, cdn.tailwindcss.com, code.jquery.com, Google Fonts for stylesheets).
+4. `hyperframes/index.html` and `hyperframes/package.json`.
+The existing film is 1080 by 1920 and 15 seconds.
+HyperFrames is pinned at 0.8.225.
+The new reel is a separate folder.
 
-## Decisions and reconciliations
-- Stack is vanilla Three.js, not R3F. GSAP and Lenis are not needed because scroll is native and the single value drives the camera.
-- "Connect sheet" (brief) overrides "Connect my sheet" (copy file). Noted in PLAN.md and QC_REPORT.md.
-- The root `ORCHESTRATOR.md` lists root-level BRIEF, PLAN and QC files. The user's instruction (write only inside `intro/`) takes precedence, so those files are in `intro/`.
+5. `C:\Users\Admin\.agents\skills\scrollme\references\ux-laws.md`.
+Local skill file.
+It defines the 14 laws used in `intro/UX_LAWS_AUDIT.md`.
+
+6. `hyperframes/output/final.mp4`.
+File size 1759410 bytes.
+Last write time on this machine: 2026-11-01 1:09:47 pm.
+This pass did not replace that file.
+
+7. Chrome headless check on `http://127.0.0.1:8766/intro/`.
+Chrome from `C:\Program Files\Google\Chrome\Application\chrome.exe`.
+Viewports 390 by 844 and 1440 by 900.
+Results are in `intro/QC_REPORT.md`.

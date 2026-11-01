@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "historyId": "4d679809-2c14-4ca3-abc3-2f02fe6a61c3",
+  "currentRevision": null,
+  "pendingChanges": false,
+  "files": {
+    "hyperframes.json": {
+      "hash": "60430047b7e49e9d03fab28f90dc75da3a0fc79900354582df181d7d2efc1509",
+      "content": "C:\\Users\\Admin\\.cache\\hyperframes\\history\\4d679809-2c14-4ca3-abc3-2f02fe6a61c3\\blobs\\60\\60430047b7e49e9d03fab28f90dc75da3a0fc79900354582df181d7d2efc1509"
+    },
+    "index.html": {
+      "hash": "7a3588fcda08209d909d6075e6309445c4722d37b3d341a1a39d91965707f3ab",
+      "content": "C:\\Users\\Admin\\.cache\\hyperframes\\history\\4d679809-2c14-4ca3-abc3-2f02fe6a61c3\\blobs\\7a\\7a3588fcda08209d909d6075e6309445c4722d37b3d341a1a39d91965707f3ab"
+    },
+    "package.json": {
+      "hash": "4899c9190bbb255bd5dd6404087f5226792a063b906f60b3c0b2b38bc33b1840",
+      "content": "C:\\Users\\Admin\\.cache\\hyperframes\\history\\4d679809-2c14-4ca3-abc3-2f02fe6a61c3\\blobs\\48\\4899c9190bbb255bd5dd6404087f5226792a063b906f60b3c0b2b38bc33b1840"
+    }
+  },
+  "revisions": {},
+  "checks": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "41b8bf5d-921a-455f-bf3f-724b618127aa",
+      "completedAt": 1793534242905,
+      "output": "E:\\ai\\claude\\ALAi\\elevation progress tracker\\hyperframes\\reel\\renders\\reel_2026-11-01_19-56-45.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
+}

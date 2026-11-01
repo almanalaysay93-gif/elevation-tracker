@@ -2,15 +2,22 @@
    Navigations: network first. The app's own pages are cached under their request URL.
    /intro/ is never cached or intercepted, so it cannot overwrite the app shell.
    Same-origin static files: cache first. Cross-origin (Apps Script, fonts) is never cached. */
-const VERSION = 'elevation-v3-47';
+const VERSION = 'elevation-v3-56';
 const SHELL = VERSION + '-shell';
 const PRECACHE = [
   './',
   './index.html',
   './styles.css',
+  './landing.css',
+  './landing.js',
+  './assets/anime.esm.min.js',
   './gym-background.js',
   './assets/gym-background.webp',
   './assets/gym-background-light.webp',
+  './assets/hero-bench.webp',
+  './assets/hero-squat.webp',
+  './assets/hero-deadlift.webp',
+  './assets/hero-row.webp',
   './assets/three.module.js',
   './tokens.css',
   './app.js',
@@ -40,6 +47,8 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // Apps Script and fonts go straight to the network
+  // Video needs byte-range requests; a cache-first SW breaks playback. Let the network handle it.
+  if (req.headers.has('range') || /\.(mp4|webm)$/i.test(url.pathname)) return;
 
   if (req.mode === 'navigate') {
     if (PASSTHROUGH.test(url.pathname)) return; // no respondWith, no cache write

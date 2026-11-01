@@ -1,0 +1,9 @@
+browser-qa: http://127.0.0.1:5184/
+  chromium 129.0.6668.29; screenshots and report.json in .buildme/qa/r3-baseline
+  block: 0  major: 0  minor: 6
+  MINOR 320px: 2 failed request(s)
+  MINOR 390px: 2 failed request(s)
+  MINOR 768px: 2 failed request(s)
+  MINOR 1280px: 2 failed request(s)
+  MINOR 1440px: 2 failed request(s)
+  MINOR 1920px: 2 failed request(s)

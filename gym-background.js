@@ -1,9 +1,16 @@
-import * as THREE from './assets/three.module.js';
 
 const host = document.querySelector('.gym-scene');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-if (host && !reduceMotion.matches && !navigator.connection?.saveData) {
+// Wait for idle, then skip on the signed-out landing (it has its own 3D stage).
+await new Promise(r => (window.requestIdleCallback || setTimeout)(r, { timeout: 2500 }));
+const signedOut = () => document.body.classList.contains('signed-out') || !!document.querySelector('.stage');
+if (host && signedOut()) {
+  await new Promise(r => { const mo = new MutationObserver(() => { if (!signedOut()) { mo.disconnect(); r(); } }); mo.observe(document.body, { attributes: true, childList: true, subtree: true }); });
+}
+const THREE = host ? await import('./assets/three.module.js') : null;
+
+if (THREE && !reduceMotion.matches && !navigator.connection?.saveData) {
   try {
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));

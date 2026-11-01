@@ -1,46 +1,53 @@
-# Scrollme brief: Elevation intro
+# Scrollme brief: sign-in parallax intro
 
-Status: approved. The user confirmed the brief in the scrollme request. This file restates it as built.
+Status: approved on 2026-11-01.
+This file replaces the older sheet-connect intro brief for `intro/` only.
 
 ## Goal
-A scroll-driven onboarding story at `intro/` that explains Elevation in five sections and sends the lifter to the app or to the Setup section for connecting a Google Sheet.
+
+The page at `intro/` is the 3D landing page and the sign-in page.
+The signed-out screen inside `app.js` stays as it is.
 
 ## Audience
-Lifters who have not used Elevation. Phone first (390px), desktop secondary (1440px).
 
-## Sections (from copy/COPY.md, intro.s1 to intro.s5)
-The "01 HOOK" style beat names below are internal labels. They are not shown on the page (round 1, S-4). The nav shows 01 to 05 with screen-reader names "Section 1" to "Section 5".
-1. 01 HOOK. "Lift. Log. Know if it's working."
-2. 02 LOG FAST. "Last set, already filled in."
-3. 03 SEE PROGRESS. "Every machine, charted."
-4. 04 WEEKLY VERDICT. "One verdict per week."
-5. 05 CONNECT YOUR SHEET. "Your data stays in your Sheet."
+One lifter.
+Phone first at 390px.
+Desktop check at 1440px.
 
-## Endings
-- "Open app" links to `../`.
-- "Connect sheet" links to `../#settings`.
+## Decisions
 
-Copy file says "Connect my sheet". The brief wording wins. Recorded in PLAN.md.
+1. Replace `intro/` only.
+2. Keep the existing Google sign-in button and the same public client id.
+3. Put the action in the first view and again on section 05.
+4. The hero is the gym photo plus a local Three.js weight plate.
+5. Keep Volt telemetry on this page.
+6. Ship the page and a separate silent 16:9 film of 8 seconds.
+7. One scroll value drives the camera.
+8. The sign-in control is visible at 390px without scrolling.
+9. Local preview only.
+10. Show this page even when the client id is blank.
+11. A blank client id shows Enter demo.
+12. Enter demo does not skip the app gate.
+13. Open app goes to `../` and can still meet the app sign-in screen.
 
-## Visual direction
-- Sporty cyberpunk telemetry. Matte black `#07090A`, volt `#C6FF00` for the primary object and actions, cyan `#00E5FF` wireframe edges.
-- No purple gradients. Dark default, light theme follows tokens.
-- Fonts from tokens: Chakra Petch (display), Inter (body), JetBrains Mono (numbers and labels).
+## Sections
 
-## Hero object
-One procedural barbell with plates. No downloaded assets.
+1. Lift. Log. Know if it's working.
+2. Last set, already filled in.
+3. Every machine, charted.
+4. One verdict per week.
+5. Start with this account.
 
 ## Motion
-- One normalized scroll value drives the camera and the object.
-- Reveals are opacity and a 12px transform, `var(--dur-slow)` (280ms) with `var(--ease-out)`, using IntersectionObserver. Round 1 moved these from literal values to tokens.
-- No loops, no ambient motion. Motion ceiling 300ms. Transform and opacity only.
 
-## Requirements
-- WCAG 2.2 AA. 48px touch targets. Visible focus ring. Skip link.
-- Reduced motion: no camera travel, static frame, opacity-only reveals at 120ms or less.
-- WebGL failure or JS off: all five sections readable, CSS visual shown.
-- Semantic HTML with real links. No horizontal scroll at 390px.
-- Write only inside `intro/`. No publish, no deploy.
+Camera keyframes sit at 0, 0.25, 0.5, 0.75 and 1.
+UI motion uses the existing duration tokens and stays at or under 300ms.
+Reduced motion keeps one static frame.
+The form stays visible.
 
 ## Out of scope
-Changes to the app, `copy/`, `tokens.css`, or any file outside `intro/`.
+
+No git commit.
+No deploy.
+No change to `app.js`.
+No change to the portrait film at `hyperframes/output/final.mp4`.

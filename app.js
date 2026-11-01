@@ -1274,52 +1274,109 @@
       fn();
     } else if (tries < 80) setTimeout(() => whenGsi(fn, tries + 1), 150);
   }
+  // Signed-out stage (landing.js drives it). One screen, five scenes, no page scroll.
+  // Videos never autoplay from markup: landing.js plays only the active clip, posters cover reduced motion.
   function signInView() {
+    const clip = (name, side, eager) => `<video class="st-clip" data-clip="${name}" data-side="${side}" ${eager ? `src="assets/${name}.mp4" poster="assets/${name}.webp"` : `data-src="assets/${name}.mp4" data-poster="assets/${name}.webp"`} muted loop playsinline preload="${eager ? 'auto' : 'none'}" tabindex="-1" aria-hidden="true"></video>`;
+    const dots = ['Start', 'Strength', 'Volume', 'Consistency', 'Sign in'];
     return `
-      <section class="landing" aria-labelledby="landingTitle">
-        <div class="landing-copy">
-          <p class="landing-eyebrow">Elevation</p>
-          <h1 class="landing-title" id="landingTitle">Track every set. Beat last session.</h1>
-          <p class="landing-lede" data-reveal>Log your lifts, plan your split for the week, and see your progress over time. Your sets are saved to your own account.</p>
-          <ul class="landing-points" data-reveal>
-            <li><span class="landing-dot" aria-hidden="true"></span>Log sets with weight, reps and intensity</li>
-            <li><span class="landing-dot" aria-hidden="true"></span>Plan each day as upper, lower or rest</li>
-            <li><span class="landing-dot" aria-hidden="true"></span>Charts and calendar show what changed</li>
-          </ul>
+      <div class="stage" data-scene="0" data-side="right" aria-roledescription="carousel" aria-label="Elev introduction">
+        <div class="st-media" aria-hidden="true">
+          ${clip('hero-bench', 'right', true)}${clip('hero-row', 'left')}${clip('hero-deadlift', 'right')}${clip('hero-squat', 'left')}
         </div>
-        <div class="landing-side">
-          <div class="landing-phone" aria-hidden="true" data-reveal>
-            <div class="landing-phone-head">Sample session</div>
-            <div class="landing-phone-row"><span>Bench press</span><b>60 kg × 8</b></div>
-            <div class="landing-phone-row"><span>Lat pulldown</span><b>45 kg × 10</b></div>
-            <div class="landing-phone-row"><span>Shoulder press</span><b>24 kg × 10</b></div>
+        <div class="st-shade" aria-hidden="true"></div>
+        <div class="st-seam" aria-hidden="true" hidden></div>
+        <canvas class="st-3d" aria-hidden="true"></canvas>
+        <div class="st-grain" aria-hidden="true"></div>
+
+        <header class="st-top">
+          <span class="st-brand"><b>Elev</b><small>Strength log</small></span>
+          <button class="st-cta" type="button" data-jump="4">Sign in</button>
+        </header>
+
+        <section class="st-scene" data-side="right" data-clip="hero-bench" aria-labelledby="stT0">
+          <div class="st-panel">
+            <p class="st-eyebrow">01 / Bench press</p>
+            <h1 class="st-title" id="stT0">Lift. Log. <em>Climb.</em></h1>
+            <p class="st-lede">Elev keeps your last weight and reps ready, so every set starts from where you left off.</p>
           </div>
-          <section class="card landing-signin" data-reveal aria-labelledby="signinTitle">
-            <h2 id="signinTitle">Start logging</h2>
-            <p class="hint">${COPY.signIn}</p>
-            <div id="gsiBtn" class="gsi-slot" style="display:flex;justify-content:center;min-height:44px"></div>
-            <p class="hint" id="gsiNote">${COPY.signInWait}</p>
-          </section>
+        </section>
+
+        <section class="st-scene" data-side="left" data-clip="hero-row" aria-labelledby="stT1">
+          <div class="st-panel">
+            <p class="st-eyebrow">02 / Strength</p>
+            <h2 class="st-title" id="stT1">Watch the line <em>rise.</em></h2>
+            <div class="st-card">
+              <div class="st-card-head"><span class="st-tag">Example progress</span><span>Est. 1RM · 12 weeks</span></div>
+              <p class="st-big"><span data-count="97.5">97.5</span> kg <span class="st-delta">+17.5</span></p>
+              <div data-chart="line"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="st-scene" data-side="right" data-clip="hero-deadlift" aria-labelledby="stT2">
+          <div class="st-panel">
+            <p class="st-eyebrow">03 / Volume</p>
+            <h2 class="st-title" id="stT2">Every week <em>adds up.</em></h2>
+            <div class="st-card">
+              <div class="st-card-head"><span class="st-tag">Example progress</span><span>Weekly deadlift volume</span></div>
+              <p class="st-big"><span data-count="13.6">13.6</span> t <span class="st-delta">+48%</span></p>
+              <div data-chart="bars"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="st-scene" data-side="left" data-clip="hero-squat" aria-labelledby="stT3">
+          <div class="st-panel">
+            <p class="st-eyebrow">04 / Consistency</p>
+            <h2 class="st-title" id="stT3">Show up. <em>Set records.</em></h2>
+            <div class="st-card">
+              <div class="st-card-head"><span class="st-tag">Example progress</span><span>This block</span></div>
+              <div class="st-ring-wrap">
+                <div data-chart="ring"></div>
+                <ul class="st-prs">
+                  <li><span>Squat</span><b>140 kg</b></li>
+                  <li><span>Bench</span><b>97.5 kg</b></li>
+                  <li><span>Deadlift</span><b>180 kg</b></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="st-scene" data-side="center" data-clip="hero-bench" data-dim="1" aria-labelledby="signinTitle">
+          <div class="st-panel st-auth">
+            <div class="st-auth-card">
+              <span class="st-auth-mark" aria-hidden="true">E</span>
+              <h2 class="st-title" id="signinTitle">Start your log</h2>
+              <p class="st-lede">${COPY.signIn}</p>
+              <ul class="st-perks">
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg><span>Sets, reps and weight in two taps</span></li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg><span>Charts for every lift</span></li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg><span>Your data stays in your Google Sheet</span></li>
+              </ul>
+              <div class="st-gwrap"><div id="gsiBtn" class="st-gslot"></div></div>
+              <p class="st-auth-status" id="gsiNote" role="status" aria-live="polite">${COPY.signInWait}</p>
+              <p class="st-fine">Google sign-in only. No password to remember.</p>
+            </div>
+          </div>
+        </section>
+
+        <nav class="st-nav" aria-label="Scenes">
+          ${dots.map((d, i) => `<button class="st-dot" type="button" aria-label="${i + 1}: ${d}" aria-current="${i ? 'false' : 'step'}"><i></i></button>`).join('')}
+        </nav>
+        <div class="st-foot">
+          <span class="st-count"><b>01</b> / 05</span>
+          <span class="st-progress" aria-hidden="true"><i></i></span>
+          <span class="st-hint" aria-hidden="true">Scroll or swipe</span>
+          <button class="st-motion" type="button" aria-pressed="false">Motion off</button>
+          <span class="st-arrows">
+            <button class="st-arrow" type="button" data-go="prev" aria-label="Previous scene">↑</button>
+            <button class="st-arrow" type="button" data-go="next" aria-label="Next scene">↓</button>
+          </span>
         </div>
-      </section>`;
-  }
-  // Scroll reveal for the signed-out page. Only runs with motion allowed and IntersectionObserver present.
-  // Content is visible without it: .reveal-ready is added here, so no JS means no hidden content.
-  function mountReveal() {
-    try {
-      const root = document.querySelector('.landing');
-      const items = root ? Array.from(root.querySelectorAll('[data-reveal]')) : [];
-      if (!items.length || !('IntersectionObserver' in window)) return;
-      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      root.classList.add('reveal-ready');
-      const show = el => { el.classList.add('is-in'); io.unobserve(el); };
-      const io = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) show(e.target); });
-      }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-      items.forEach(el => io.observe(el));
-      // Fallback: never leave content hidden if the observer does not fire (background tab, zero-height viewport).
-      setTimeout(() => items.forEach(el => el.classList.add('is-in')), 1500);
-    } catch (e) { /* observer blocked: content stays visible */ }
+        <p class="st-live sr-only" aria-live="polite"></p>
+      </div>`;
   }
   function mountSignIn() {
     whenGsi(() => {
@@ -1335,6 +1392,7 @@
   async function onCredential(resp) {
     const claims = decodeJwt(resp.credential);
     if (!claims || claims.aud !== GOOGLE_CLIENT_ID || !claims.email) { setStatus(COPY.signInFail, true); return; }
+    if (stageCtl) { try { await stageCtl.success(); } catch (e) { /* animation only */ } }
     const email = String(claims.email).toLowerCase();
     const prev = session && session.email;
     session = { token: resp.credential, email, name: claims.name || email, picture: claims.picture || '', exp: claims.exp };
@@ -1360,6 +1418,7 @@
     paint();
   }
 
+  let stageCtl = null;
   function paint() {
     const r = route();
     const changed = r !== lastRoute;
@@ -1369,13 +1428,19 @@
     if (authOn() && !signedIn()) {
       // Signed out: one landing + sign-up page. No app header, tab bar or demo banner.
       document.body.classList.add('signed-out');
-      view.innerHTML = signInView();
-      mountSignIn();
-      mountReveal();
+      if (!view.querySelector('.stage')) {
+        if (stageCtl) { stageCtl.destroy(); stageCtl = null; }
+        view.innerHTML = signInView();
+        mountSignIn();
+        { const st = view.querySelector('.stage'); Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, 900))]).then(() => st && st.classList.add('fonts-ok')); }
+        import('./landing.js').then(m => { if (view.querySelector('.stage')) stageCtl = m.mountStage(view); })
+          .catch(() => { /* module blocked: stage stays static, sign-in still works */ });
+      }
       $$('.nav a[data-route]').forEach(a => a.removeAttribute('aria-current'));
       return;
     }
     document.body.classList.remove('signed-out');
+    if (stageCtl) { stageCtl.destroy(); stageCtl = null; }
     const skel = loading && !ls.get('cache', null);
     const arrive = justArrived && !skel;
     if (arrive) justArrived = false;
