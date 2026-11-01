@@ -611,14 +611,7 @@
       <input id="favSearch" type="search" placeholder="${COPY.favSearch}" value="${esc(ui.favQ)}">
     </div>
     <div id="favBody"></div>
-    <div class="row mt"><button type="button" class="btn" id="addExBtn">+ Add exercise</button></div>
-
-    <section class="card mt">
-      <h2>All machines</h2>
-      <ul class="sets">${state.exercises.map(e => `<li>
-        <span><strong>${esc(e.Name)}</strong> <span class="muted">· ${esc(e.Group)}</span></span>
-        ${favButton(e.Name, e.Favorite, ui.popFav === e.Name ? 'pop' : '')}</li>`).join('')}</ul>
-    </section>`;
+`;
 
   function renderFavBody() {
     const el = $('#favBody');
@@ -1124,7 +1117,6 @@
     if (t.id === 'unitToggle') { unit = unit === 'kg' ? 'lbs' : 'kg'; ls.set('unit', unit); paint(); return; }
     if (t.id === 'themeToggle') { toggleTheme(); return; }
     if (t.id === 'cTest') { testConn(); return; }
-    if (t.id === 'addExBtn') { ui.openNew = true; location.hash = '#log'; return; }
     if (d.fav !== undefined) {
       ui.popFav = d.fav;
       run(() => { write({ action: 'toggleFav', name: d.fav }); });
