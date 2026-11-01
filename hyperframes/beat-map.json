@@ -1,0 +1,8 @@
+{"duration":15,"fps":60,"width":1080,"height":1920,"audio":"none","beats":[
+{"id":"hook","start":0,"end":1.9,"copy":"GYM TRACKER / LIFT. LOG. CLIMB."},
+{"id":"log-set","start":1.65,"end":4.4,"copy":"ONE THUMB. ONE SET.","actions":[{"t":2.95,"tap":"+2.5 kg"},{"t":3.78,"tap":"LOG SET"},{"t":3.9,"reveal":"set 3 8x82.5"}]},
+{"id":"new-pr","start":4.4,"end":6.4,"copy":"NEW PR / BENCH 82.5 KG"},
+{"id":"chart","start":6.4,"end":9.1,"copy":"WATCH IT RISE.","actions":[{"t":6.7,"draw":"line 1.5s"},{"t":8.15,"dot":"peak"}]},
+{"id":"verdict","start":9.1,"end":11.1,"copy":"PROGRESS / SCORE +8"},
+{"id":"share","start":11.1,"end":12.7,"copy":"Week share card / SHARE YOUR WEEK"},
+{"id":"end","start":12.7,"end":15,"copy":"ELEVATION / free, your Google Sheet / almanalaysay93-gif.github.io/elevation-tracker"}]}

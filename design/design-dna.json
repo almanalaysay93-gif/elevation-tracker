@@ -1,0 +1,60 @@
+{
+  "name": "Elevation — Volt Telemetry",
+  "color": {
+    "dark": {
+      "bg":       {"hex": "#07090A", "oklch": "oklch(0.13 0.005 180)"},
+      "surface":  {"hex": "#0F1314", "oklch": "oklch(0.18 0.008 190)"},
+      "surface2": {"hex": "#161C1E", "oklch": "oklch(0.22 0.010 200)"},
+      "line":     {"hex": "#253033", "oklch": "oklch(0.30 0.015 200)"},
+      "text":     {"hex": "#EAF2EE", "oklch": "oklch(0.95 0.010 160)"},
+      "muted":    {"hex": "#8FA19A", "oklch": "oklch(0.69 0.020 165)"},
+      "accent":   {"hex": "#C6FF00", "oklch": "oklch(0.93 0.230 125)", "on": "#07090A"},
+      "signal":   {"hex": "#00E5FF", "oklch": "oklch(0.85 0.150 205)"},
+      "danger":   {"hex": "#FF4D6A", "oklch": "oklch(0.68 0.210 15)"},
+      "warn":     {"hex": "#FFB020", "oklch": "oklch(0.82 0.170 75)"}
+    },
+    "light": {
+      "bg":       {"hex": "#F2F4EE", "oklch": "oklch(0.96 0.008 125)"},
+      "surface":  {"hex": "#FFFFFF", "oklch": "oklch(1 0 0)"},
+      "surface2": {"hex": "#E8ECE4", "oklch": "oklch(0.93 0.010 130)"},
+      "line":     {"hex": "#C9D1C6", "oklch": "oklch(0.85 0.015 140)"},
+      "text":     {"hex": "#0B100E", "oklch": "oklch(0.16 0.010 165)"},
+      "muted":    {"hex": "#4F5C57", "oklch": "oklch(0.45 0.015 170)"},
+      "accent":   {"hex": "#4D6B00", "oklch": "oklch(0.48 0.120 125)", "on": "#FFFFFF"},
+      "signal":   {"hex": "#00748A", "oklch": "oklch(0.50 0.090 215)"},
+      "danger":   {"hex": "#C4183A", "oklch": "oklch(0.52 0.200 18)"},
+      "warn":     {"hex": "#8A5A00", "oklch": "oklch(0.50 0.110 70)"}
+    },
+    "rules": [
+      "accent <= 10% of any screen; reserved for primary action, active state, PR, PROGRESS",
+      "no gradients except one radial accent glow at <= 18% alpha",
+      "verdict colors: PROGRESS=accent, HOLD=signal, DIP=danger"
+    ]
+  },
+  "type": {
+    "display": "Chakra Petch 600/700",
+    "body": "Inter 400/500/600",
+    "numeric": "JetBrains Mono 500/700, font-variant-numeric: tabular-nums",
+    "scale_px": {"xs": 12, "sm": 14, "base": 16, "lg": 20, "xl": 24, "2xl": 32, "3xl": 44, "hero": 64, "share": 280},
+    "lineHeight": {"tight": 1.05, "snug": 1.25, "body": 1.5},
+    "tracking": {"label": "0.12em uppercase", "display": "-0.01em"}
+  },
+  "spacing_px": [0, 4, 8, 12, 16, 24, 32, 48, 64],
+  "radius_px": {"none": 0, "sm": 4, "md": 8, "pill": 999, "cut": 10},
+  "elevation": {
+    "0": "none",
+    "1": "inset 0 0 0 1px var(--line)",
+    "2": "inset 0 0 0 1px var(--line), 0 8px 24px -12px rgb(0 0 0 / .6)",
+    "glow": "0 0 0 1px var(--accent), 0 0 24px -6px color-mix(in oklch, var(--accent) 45%, transparent)"
+  },
+  "motion": {
+    "duration_ms": {"instant": 80, "fast": 140, "base": 200, "slow": 280, "hero": 300},
+    "easing": {
+      "out": "cubic-bezier(.2,.8,.2,1)",
+      "inOut": "cubic-bezier(.65,0,.35,1)",
+      "snap": "cubic-bezier(.3,1.4,.5,1)"
+    },
+    "reducedMotion": "opacity-only crossfades <= 120ms; no transforms; count-ups show final value"
+  },
+  "touch": {"minTarget_px": 48, "thumbZone": "bottom 45% of an 844px-tall viewport", "tabBar_px": 64}
+}

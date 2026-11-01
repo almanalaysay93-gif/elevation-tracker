@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<style>
+:root{--bg:#07090A;--surface:#0F1314;--surface-2:#161C1E;--line:#253033;--control:#5E6E68;--text:#EAF2EE;--muted:#8FA19A;--accent:#C6FF00;--accent-ink:#07090A;--signal:#00E5FF;
+--fd:'Chakra Petch',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif;--fm:'JetBrains Mono',ui-monospace,monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--fb)}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+.glow{position:absolute;inset:0;background:radial-gradient(60% 40% at 85% 0%,rgb(198 255 0 / .14),rgb(198 255 0 / 0) 70%)}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0}
+.kicker{font-family:var(--fm);font-weight:500;font-size:34px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.h1{font-family:var(--fd);font-weight:700;font-size:150px;line-height:.95;text-align:center;text-transform:uppercase}
+.v{color:var(--accent)}
+.cap{position:absolute;top:150px;left:0;right:0;text-align:center;font-family:var(--fd);font-weight:700;font-size:76px;text-transform:uppercase}
+.phone{position:absolute;left:150px;top:420px;width:780px;height:1320px;border-radius:72px;background:var(--surface);box-shadow:inset 0 0 0 2px var(--line),0 40px 80px -30px #000;padding:70px 56px;overflow:hidden}
+.row{display:flex;justify-content:space-between;align-items:center}
+.lbl{font-family:var(--fm);font-size:28px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.ex{font-family:var(--fd);font-weight:700;font-size:64px;margin:18px 0 40px}
+.step{background:var(--surface-2);border:2px solid var(--control);border-radius:28px;height:150px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;margin-bottom:26px}
+.step b{font-family:var(--fm);font-weight:700;font-size:84px;font-variant-numeric:tabular-nums}
+.pm{width:96px;height:96px;border-radius:24px;border:2px solid var(--control);display:flex;align-items:center;justify-content:center;font-size:60px;color:var(--text)}
+.btn{height:150px;border-radius:32px;background:var(--accent);color:var(--accent-ink);font-family:var(--fd);font-weight:700;font-size:56px;display:flex;align-items:center;justify-content:center;margin-top:16px;letter-spacing:.04em}
+.set{height:100px;border-bottom:2px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-family:var(--fm);font-size:38px;color:var(--muted)}
+.set.new{color:var(--text)}
+.thumb{position:absolute;width:150px;height:150px;border-radius:50%;background:rgb(234 242 238 / .18);border:3px solid rgb(234 242 238 / .5);left:700px;top:1600px}
+.pr{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--accent);color:var(--accent-ink);font-family:var(--fd);font-weight:700;font-size:170px;padding:30px 70px;border-radius:40px;white-space:nowrap}
+.prsub{position:absolute;top:1230px;width:100%;text-align:center;font-family:var(--fm);font-size:52px;font-weight:700}
+.chart{position:absolute;left:90px;top:520px;width:900px;height:900px;background:var(--surface);border-radius:48px;box-shadow:inset 0 0 0 2px var(--line);padding:60px}
+.verdict{font-family:var(--fd);font-weight:700;font-size:200px;color:var(--accent)}
+.score{font-family:var(--fm);font-weight:700;font-size:64px;margin-top:30px}
+.card{width:820px;height:1180px;border-radius:56px;background:var(--surface);box-shadow:inset 0 0 0 2px var(--line),0 50px 90px -30px #000;padding:80px 70px;position:relative;overflow:hidden}
+.stat{margin-top:56px;position:relative}.stat b{display:block;font-family:var(--fm);font-weight:700;font-size:96px}
+.url{font-family:var(--fm);font-weight:500;font-size:34px;color:var(--accent);margin-top:60px}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1080" data-height="1920">
+  <div class="glow"></div>
+
+  <div id="s1" class="scene clip" data-start="0" data-duration="1.65" data-track-index="1">
+    <div class="kicker" id="s1k">Gym tracker</div>
+    <div class="h1" style="margin-top:40px"><div class="w">Lift.</div><div class="w">Log.</div><div class="w v">Climb.</div></div>
+  </div>
+
+  <div id="s2" class="scene clip" data-start="1.6" data-duration="4.6" data-track-index="2">
+    <div class="cap" id="s2cap">One thumb. One set.</div>
+    <div class="phone" id="phone">
+      <div class="row"><span class="lbl">Upper</span><span class="lbl">Set 3</span></div>
+      <div class="ex">Bench press</div>
+      <div class="step"><span class="pm">−</span><div><span class="lbl">kg&nbsp;</span><b id="kg">80.0</b></div><span class="pm" id="plus">+</span></div>
+      <div class="step"><span class="pm">−</span><div><span class="lbl">reps&nbsp;</span><b>8</b></div><span class="pm">+</span></div>
+      <div class="btn" id="logbtn">LOG SET</div>
+      <div style="margin-top:50px">
+        <div class="set"><span>1</span><span>8 × 75.0 kg</span></div>
+        <div class="set"><span>2</span><span>8 × 77.5 kg</span></div>
+        <div class="set new" id="newset"><span>3</span><span>8 × 82.5 kg</span></div>
+      </div>
+    </div>
+    <div class="thumb" id="thumb"></div>
+    <div class="pr" id="pr">NEW PR</div>
+    <div class="prsub" id="prsub">BENCH 82.5 KG</div>
+  </div>
+
+  <div id="s3" class="scene clip" data-start="6.0" data-duration="2.9" data-track-index="3">
+    <div class="cap">Watch it rise.</div>
+    <div class="chart" id="chart">
+      <div class="row"><span class="lbl">Bench · 8 weeks</span><span class="lbl v">+12.5 kg</span></div>
+      <svg width="780" height="700" viewBox="0 0 780 700" style="margin-top:30px">
+        <g stroke="#253033" stroke-width="2"><line x1="0" y1="140" x2="780" y2="140"/><line x1="0" y1="320" x2="780" y2="320"/><line x1="0" y1="500" x2="780" y2="500"/><line x1="0" y1="680" x2="780" y2="680"/></g>
+        <polyline id="line" fill="none" stroke="#C6FF00" stroke-width="10" stroke-linecap="butt" stroke-linejoin="round" points="20,620 125,580 230,590 335,480 440,430 545,360 650,250 760,110" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+        <circle id="dot" cx="760" cy="110" r="22" fill="#C6FF00" opacity="0"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="s4" class="scene clip" data-start="8.7" data-duration="2.2" data-track-index="4">
+    <div class="kicker">This week</div>
+    <div class="verdict" id="verdict">PROGRESS</div>
+    <div class="score">SCORE +<span id="sc">2</span></div>
+  </div>
+
+  <div id="s5" class="scene clip" data-start="10.7" data-duration="2.2" data-track-index="5">
+    <div class="card" id="card"><div class="glow"></div>
+      <div class="lbl" style="position:relative">Week of Oct 26</div>
+      <div style="position:relative;font-family:var(--fd);font-weight:700;font-size:120px;color:var(--accent);margin-top:20px">PROGRESS</div>
+      <div class="stat"><span class="lbl">Score</span><b>+8</b></div>
+      <div class="stat"><span class="lbl">Volume</span><b>24,310 kg</b></div>
+      <div class="stat"><span class="lbl">Sessions</span><b>4</b></div>
+      <div class="lbl" style="position:absolute;bottom:70px;left:70px">Tracked with Elevation</div>
+    </div>
+    <div class="kicker" style="margin-top:50px;color:var(--text)">Share your week</div>
+  </div>
+
+  <div id="s6" class="scene clip" data-start="12.7" data-duration="2.3" data-track-index="6">
+    <div class="h1" style="font-size:170px">ELEVA<span class="v">TION</span></div>
+    <div style="font-family:var(--fd);font-weight:600;font-size:64px;margin-top:40px">free, your Google Sheet</div>
+    <div class="url" id="url">almanalaysay93-gif.github.io/elevation-tracker</div>
+  </div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+const E = "expo.out";
+// S1 hook 0-1.6 (gone before phone)
+tl.set("#s1",{opacity:1},0)
+  .from("#s1 .w:not(:first-child)",{opacity:0,y:80,duration:.35,stagger:.22,ease:E},0.15)
+  .to("#s1",{opacity:0,duration:.22},1.38);
+// S2 logging 1.65-4.5, PR 4.5-6.0
+tl.set("#newset",{opacity:0},0).set("#pr",{opacity:0},0).set("#prsub",{opacity:0},0).set("#thumb",{opacity:0},0)
+  .to("#s2",{opacity:1,duration:.3},1.65)
+  .from("#phone",{y:200,duration:.6,ease:E},1.65)
+  .from("#s2cap",{opacity:0,y:30,duration:.4,ease:E},1.8)
+  .fromTo("#thumb",{opacity:0,x:60,y:200},{opacity:1,x:0,y:-985,duration:.5,ease:"power2.out"},2.4)
+  .to("#thumb",{scale:.85,duration:.08,yoyo:true,repeat:1},2.95)
+  .to("#plus",{backgroundColor:"#C6FF00",color:"#07090A",duration:.08,yoyo:true,repeat:1},2.95);
+const kg = {v:80};
+tl.to(kg,{v:82.5,duration:.1,onUpdate:()=>{document.getElementById("kg").textContent=(kg.v>81?82.5:80).toFixed(1)}},2.98);
+tl.to("#thumb",{y:-590,x:-260,duration:.45,ease:"power2.inOut"},3.3)
+  .to("#thumb",{scale:.85,duration:.08,yoyo:true,repeat:1},3.78)
+  .to("#logbtn",{scale:.97,duration:.08,yoyo:true,repeat:1},3.78)
+  .fromTo("#newset",{opacity:0,x:-40},{opacity:1,x:0,duration:.35,ease:E},3.9)
+  .to("#thumb",{opacity:0,duration:.25},4.1)
+  .fromTo("#phone",{opacity:1},{opacity:0,duration:.3},4.4)
+  .fromTo("#pr",{opacity:0,scale:.6},{opacity:1,scale:1,duration:.45,ease:"back.out(2)"},4.55)
+  .fromTo("#prsub",{opacity:0,y:30},{opacity:1,y:0,duration:.35,ease:E},4.65)
+  .to("#s2",{opacity:0,duration:.2},6.0);
+// S3 chart 6.0-8.7
+tl.to("#s3",{opacity:1,duration:.3},6.0)
+  .from("#chart",{y:120,duration:.6,ease:E},6.0)
+  .to("#line",{strokeDashoffset:0,duration:1.5,ease:"power2.inOut"},6.3)
+  .to("#dot",{opacity:1,duration:.2},7.75)
+  .fromTo("#dot",{attr:{r:10}},{attr:{r:22},duration:.4,ease:"back.out(3)"},7.75)
+  .to("#s3",{opacity:0,duration:.25},8.65);
+// S4 verdict 8.7-10.9
+const sc = {v:2};
+tl.to("#s4",{opacity:1,duration:.25},8.7)
+  .fromTo("#verdict",{opacity:0,scale:1.25},{opacity:1,scale:1,duration:.55,ease:E},9.3)
+  .to(sc,{v:8,duration:.45,ease:"power1.out",onUpdate:()=>{document.getElementById("sc").textContent=Math.round(sc.v)}},8.8)
+  .to("#s4",{opacity:0,duration:.25},10.65);
+// S5 share 10.7-12.9 (VOLUME hold +0.4s)
+tl.to("#s5",{opacity:1,duration:.25},10.7)
+  .fromTo("#card",{y:300,rotation:-4},{y:0,rotation:0,duration:.7,ease:E},10.7)
+  .from("#card .stat",{opacity:0,y:30,stagger:.12,duration:.3,ease:E},11.1)
+  .to("#s5",{opacity:0,duration:.2},12.65);
+// S6 end 13.1-15
+tl.to("#s6",{opacity:1,duration:.25},12.7)
+  .from("#s6 .h1",{y:60,duration:.5,ease:E},12.7)
+  .from("#url",{opacity:0,duration:.3},12.85)
+  .to({}, {duration:.01}, 14.99);
+window.__timelines["main"] = tl;
+tl.seek(0);
+</script>
+</body>
+</html>

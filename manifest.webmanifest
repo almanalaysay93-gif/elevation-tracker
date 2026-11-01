@@ -1,0 +1,13 @@
+{
+  "name": "Elevation: Gym Log and Weekly Score",
+  "short_name": "Elevation",
+  "description": "Log sets in kg or lbs, chart progress per machine, and get a weekly Progress Score. Free. Your data stays in your own Google Sheet.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07090A",
+  "theme_color": "#07090A",
+  "icons": [
+    { "src": "icons/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

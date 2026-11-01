@@ -1,0 +1,227 @@
+/* ==========================================================================
+   Elevation: Volt Telemetry, design tokens
+   Source of truth: design/design-dna.json + design/style-spec.md + design/motion-doctrine.md
+   Owner: Agent 2 (frontend-architect). Look and motion decisions: DESIGN.md.
+
+   Theme pattern (do not reorder):
+     1. :root                                       dark, default
+     2. @media (prefers-color-scheme: light)         light, only when no data-theme is set
+     3. :root[data-theme="light"]                   light, forced by the Setup toggle
+     Forced dark (data-theme="dark") is covered by rule 1 because rule 2 excludes it.
+
+   Rules:
+   - Components use these tokens only. No literal colour, font size or spacing in component CSS.
+   - Volt (--accent) is 10% of any screen or less: primary action, active state, PR, PROGRESS.
+   - --line is a decorative hairline only. Control boundaries use --control (3:1 or better).
+   - Breakpoints cannot be used inside var(); the values are fixed in DESIGN.md:
+       320 min support, 360 (tab label fallback), 768 (tablet), 1024 (desktop rail on), 1440 (layout check).
+   ========================================================================== */
+
+/* ---------- 1. Dark (default) ---------- */
+:root {
+  color-scheme: dark;
+
+  /* colour roles */
+  --bg: #07090A;
+  --surface: #0F1314;
+  --surface-2: #161C1E;
+  --line: #253033;            /* decorative hairline, not a control boundary */
+  --control: #5E6E68;         /* input, stepper, segmented, unselected chip borders (3.2:1 on surface-2) */
+  --text: #EAF2EE;
+  --muted: #8FA19A;
+  --accent: #C6FF00;          /* volt: primary action, active, PR, PROGRESS */
+  --accent-ink: #07090A;     /* text on volt */
+  --focus: var(--accent);     /* focus ring colour */
+  --signal: #00E5FF;          /* cyan: second series, HOLD, syncing */
+  --danger: #FF4D6A;          /* DIP, offline, destructive */
+  --warn: #FFB020;            /* demo banner */
+
+  /* translucent tints (explicit alpha, no color-mix needed for these) */
+  --accent-soft: rgb(198 255 0 / 0.15);
+  --signal-soft: rgb(0 229 255 / 0.12);
+  --danger-soft: rgb(255 77 106 / 0.14);
+  --scrim: rgb(0 0 0 / 0.6);
+  --glow: radial-gradient(60% 70% at 85% 0%, rgb(198 255 0 / 0.14), rgb(198 255 0 / 0) 70%);
+  --glow-max-alpha: 0.18;     /* ceiling, never exceed */
+
+  /* elevation */
+  --elev-0: none;
+  --elev-1: inset 0 0 0 1px var(--line);
+  --elev-float: 0 8px 24px -12px rgb(0 0 0 / 0.6);   /* toast and sheet only, never cards */
+  --elev-glow: 0 0 0 1px var(--accent), 0 0 24px -6px color-mix(in oklch, var(--accent) 45%, transparent);
+}
+
+/* ---------- 2. Light, when the OS asks for it and the user has not forced a theme ---------- */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --bg: #F2F4EE;
+    --surface: #FFFFFF;
+    --surface-2: #E8ECE4;
+    --line: #C9D1C6;
+    --control: #6B7872;
+    --text: #0B100E;
+    --muted: #4F5C57;
+    --accent: #4D6B00;
+    --accent-ink: #FFFFFF;
+    --focus: var(--accent);
+    --signal: #00748A;
+    --danger: #C4183A;
+    --warn: #8A5A00;
+
+    --accent-soft: rgb(77 107 0 / 0.15);
+    --signal-soft: rgb(0 116 138 / 0.12);
+    --danger-soft: rgb(196 24 58 / 0.12);
+    --scrim: rgb(11 16 14 / 0.5);
+    --glow: none;
+    --glow-max-alpha: 0;
+
+    --elev-0: none;
+    --elev-1: inset 0 0 0 1px var(--line);
+    --elev-float: 0 8px 24px -12px rgb(11 16 14 / 0.25);
+    --elev-glow: 0 0 0 1px var(--accent), 0 0 24px -6px color-mix(in oklch, var(--accent) 45%, transparent);
+  }
+}
+
+/* ---------- 3. Light, forced by the Setup theme toggle ---------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #F2F4EE;
+  --surface: #FFFFFF;
+  --surface-2: #E8ECE4;
+  --line: #C9D1C6;
+  --control: #6B7872;
+  --text: #0B100E;
+  --muted: #4F5C57;
+  --accent: #4D6B00;
+  --accent-ink: #FFFFFF;
+  --focus: var(--accent);
+  --signal: #00748A;
+  --danger: #C4183A;
+  --warn: #8A5A00;
+
+  --accent-soft: rgb(77 107 0 / 0.15);
+  --signal-soft: rgb(0 116 138 / 0.12);
+  --danger-soft: rgb(196 24 58 / 0.12);
+  --scrim: rgb(11 16 14 / 0.5);
+  --glow: none;
+  --glow-max-alpha: 0;
+
+  --elev-0: none;
+  --elev-1: inset 0 0 0 1px var(--line);
+  --elev-float: 0 8px 24px -12px rgb(11 16 14 / 0.25);
+  --elev-glow: 0 0 0 1px var(--accent), 0 0 24px -6px color-mix(in oklch, var(--accent) 45%, transparent);
+}
+
+/* ---------- Theme-independent tokens ---------- */
+:root {
+  /* verdict mapping (colour follows the verdict word) */
+  --verdict-PROGRESS: var(--accent);
+  --verdict-HOLD: var(--signal);
+  --verdict-DIP: var(--danger);
+  --verdict-BASELINE: var(--muted);   /* neutral: first logged week is not a verdict */
+
+  /* typography: families */
+  --font-display: 'Chakra Petch', system-ui, sans-serif;   /* 600 / 700 */
+  --font-body: 'Inter', system-ui, sans-serif;             /* 400 / 500 / 600 */
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;  /* 500 / 700, tabular-nums */
+
+  /* typography: size scale (px) */
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-base: 16px;      /* also the minimum input font size, prevents iOS zoom */
+  --fs-lg: 20px;
+  --fs-xl: 24px;
+  --fs-2xl: 32px;
+  --fs-3xl: 44px;
+  --fs-hero: 64px;
+  --fs-share: 280px;    /* canvas only, share card score */
+
+  /* typography: line heights */
+  --lh-tight: 1.05;
+  --lh-snug: 1.25;
+  --lh-body: 1.5;
+
+  /* typography: tracking */
+  --ls-label: 0.12em;   /* uppercase labels */
+  --ls-button: 0.08em;
+  --ls-display: -0.01em;
+  --ls-wordmark: 0.2em;
+
+  /* spacing (px) */
+  --s-0: 0px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  /* radius and cut */
+  --r-none: 0px;       /* panels */
+  --r-sm: 4px;
+  --r-md: 8px;         /* controls: buttons, inputs, steppers, toast */
+  --r-pill: 999px;     /* chips */
+  --cut: 10px;         /* chamfer, primary panel and primary CTA only */
+  --clip-cut: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+
+  /* touch and layout (px) */
+  --touch-min: 48px;     /* every control, icon-only included */
+  --cta-h: 56px;         /* pinned primary CTA */
+  --stepper-btn: 48px;
+  --header-h: 56px;
+  --tabbar-h: 64px;
+  --tabbar-total: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  --rail-w: 72px;        /* desktop left rail, at 1024 and up */
+  --gutter: 16px;        /* 390 phone; use 24px at 1024 and up */
+  --content-max: 1200px;
+  --chart-h: 260px;      /* phone; 420px on desktop */
+  --cal-cell: 48px;      /* calendar cell minimum */
+
+  /* chip and state sizes */
+  --chip-h: 32px;        /* visual; hit area is 48px via padding or pseudo-element */
+
+  /* motion: durations (ms) */
+  --dur-instant: 80ms;
+  --dur-fast: 140ms;
+  --dur-base: 200ms;
+  --dur-slow: 280ms;
+  --dur-hero: 300ms;     /* ceiling for any UI motion */
+
+  /* motion: easings */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-snap: cubic-bezier(0.3, 1.4, 0.5, 1);
+
+  /* motion: amounts */
+  --motion-distance: 6px;       /* snap-in translateY */
+  --motion-tab-shift: 8px;      /* tab change translateX */
+  --motion-toast-distance: 12px;
+  --motion-press-scale: 0.98;   /* CTA press */
+  --motion-chip-from: 0.8;      /* NEW PR chip stamp */
+  --motion-star-peak: 1.25;     /* favourite toggle */
+  --motion-scan-duration: 280ms; /* PR scanline sweep */
+  --motion-scrim-alpha: 0.6;
+}
+
+/* ---------- Reduced motion: opacity only, <=120ms, no transforms ---------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 80ms;
+    --dur-fast: 120ms;
+    --dur-base: 120ms;
+    --dur-slow: 120ms;
+    --dur-hero: 120ms;
+    --motion-distance: 0px;
+    --motion-tab-shift: 0px;
+    --motion-toast-distance: 0px;
+    --motion-press-scale: 1;
+    --motion-chip-from: 1;
+    --motion-star-peak: 1;
+    --motion-scan-duration: 0ms;
+  }
+}

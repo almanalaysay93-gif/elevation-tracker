@@ -3,52 +3,130 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Elevation Gym Tracker</title>
-  <meta name="description" content="Personal gym tracker: log reps, kg and lbs, intensity, see progress per machine and weekly KPI. Data lives in your Google Sheet.">
-  <meta name="theme-color" content="#0b0d0e">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1l7 14H1z' fill='%23c6ff00'/%3E%3C/svg%3E">
+  <title>Elevation: Gym Log and Weekly Score</title>
+  <meta name="description" content="Log sets in kg or lbs, chart progress per machine, and get a weekly Progress Score. Free. Your data stays in your own Google Sheet.">
+  <link rel="canonical" href="https://almanalaysay93-gif.github.io/elevation-tracker/">
+  <meta property="og:title" content="Elevation: Gym Log and Weekly Score">
+  <meta property="og:description" content="Log sets, chart each machine, and get a weekly verdict. Free, with data in your own Google Sheet.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://almanalaysay93-gif.github.io/elevation-tracker/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Elevation: Gym Log and Weekly Score">
+  <meta name="twitter:description" content="Log sets, chart each machine, and get a weekly verdict. Free, with data in your own Google Sheet.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Elevation",
+    "description": "Log sets in kg or lbs, chart progress per machine, and get a weekly Progress Score. Free. Your data stays in your own Google Sheet.",
+    "url": "https://almanalaysay93-gif.github.io/elevation-tracker/",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Any (web browser)",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+  <meta name="theme-color" content="#07090A">
+  <meta name="color-scheme" content="dark light">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/app-icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Fonts load without blocking first paint. display=swap shows fallback text until they arrive. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
+  <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
   <script>
-    try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}
+    // Demo mode = no sheet URL saved (same rule as isDemo() in app.js). Set before first paint so the banner never shifts layout.
+    try { document.documentElement.dataset.demo = JSON.parse(localStorage.getItem('apiUrl') || 'null') ? 'off' : 'on'; } catch (e) { document.documentElement.dataset.demo = 'on'; }
   </script>
 </head>
 <body>
+  <svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+<symbol id="i-add" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></symbol>
+<symbol id="i-calendar_today" viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></symbol>
+<symbol id="i-check" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></symbol>
+<symbol id="i-check_circle" viewBox="0 -960 960 960"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></symbol>
+<symbol id="i-chevron_left" viewBox="0 -960 960 960"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/></symbol>
+<symbol id="i-chevron_right" viewBox="0 -960 960 960"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></symbol>
+<symbol id="i-close" viewBox="0 -960 960 960"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></symbol>
+<symbol id="i-delete" viewBox="0 -960 960 960"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></symbol>
+<symbol id="i-error" viewBox="0 -960 960 960"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></symbol>
+<symbol id="i-info" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></symbol>
+<symbol id="i-refresh" viewBox="0 -960 960 960"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></symbol>
+<symbol id="i-remove" viewBox="0 -960 960 960"><path d="M200-440v-80h560v80H200Z"/></symbol>
+<symbol id="i-settings" viewBox="0 -960 960 960"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></symbol>
+<symbol id="i-share" viewBox="0 -960 960 960"><path d="M720-80q-50 0-85-35t-35-85q0-7 1-14.5t3-13.5L322-392q-17 15-38 23.5t-44 8.5q-50 0-85-35t-35-85q0-50 35-85t85-35q23 0 44 8.5t38 23.5l282-164q-2-6-3-13.5t-1-14.5q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-23 0-44-8.5T638-672L356-508q2 6 3 13.5t1 14.5q0 7-1 14.5t-3 13.5l282 164q17-15 38-23.5t44-8.5q50 0 85 35t35 85q0 50-35 85t-85 35Zm0-640q17 0 28.5-11.5T760-760q0-17-11.5-28.5T720-800q-17 0-28.5 11.5T680-760q0 17 11.5 28.5T720-720ZM240-440q17 0 28.5-11.5T280-480q0-17-11.5-28.5T240-520q-17 0-28.5 11.5T200-480q0 17 11.5 28.5T240-440Zm480 280q17 0 28.5-11.5T760-200q0-17-11.5-28.5T720-240q-17 0-28.5 11.5T680-200q0 17 11.5 28.5T720-160Zm0-600ZM240-480Zm480 280Z"/></symbol>
+<symbol id="i-star" viewBox="0 -960 960 960"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></symbol>
+<symbol id="i-warning" viewBox="0 -960 960 960"><path d="m40-120 440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Zm40-100Z"/></symbol>
+<symbol id="i-star-fill" viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.3l-5.7 3.0 1.2-6.4-4.7-4.4 6.4-.8z"/></symbol>
+<symbol id="i-show_chart" viewBox="0 0 24 24"><path d="M3 3v18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/><path d="M7 15l4-4 3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+<symbol id="i-insights" viewBox="0 0 24 24"><path d="M3 21h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/><path d="M6 17V11M11 17V5M16 17v-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/></symbol>
+<symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></symbol>
+  </svg>
+
   <a class="skip" href="#main">Skip to content</a>
+
   <header class="top">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">▲</span> ELEVATION</div>
+    <a class="brand" href="#log"><span class="brand-mark" aria-hidden="true">▲</span> ELEVATION</a>
     <div class="top-actions">
-      <button class="chip" id="unitToggle" aria-label="Display unit">kg</button>
-      <button class="icon-btn" id="themeToggle" aria-label="Toggle light or dark theme">◐</button>
+      <span class="sync" id="syncDot" role="img" aria-label="Demo" data-state="demo"></span>
+      <button type="button" class="chip" id="unitToggle" aria-label="Display unit">kg</button>
+      <button type="button" class="icon-btn" id="themeToggle" aria-label="Switch to light theme">
+        <svg class="i" aria-hidden="true" focusable="false"><use href="#i-contrast"/></svg>
+      </button>
+      <a class="icon-btn" href="#settings" id="setupLink" aria-label="Setup">
+        <svg class="i" aria-hidden="true" focusable="false"><use href="#i-settings"/></svg>
+      </a>
     </div>
   </header>
 
+  <div class="banner" id="demoBanner">
+    <svg class="i" aria-hidden="true" focusable="false"><use href="#i-warning"/></svg>
+    <span>Demo mode. Data stays on this device. Connect your sheet in Setup.</span>
+  </div>
+
   <nav class="nav" aria-label="Main">
-    <a href="#log" data-route="log"><span aria-hidden="true">＋</span>Log</a>
-    <a href="#favorites" data-route="favorites"><span aria-hidden="true">★</span>Favs</a>
-    <a href="#progress" data-route="progress"><span aria-hidden="true">↗</span>Charts</a>
-    <a href="#calendar" data-route="calendar"><span aria-hidden="true">▦</span>Calendar</a>
-    <a href="#week" data-route="week"><span aria-hidden="true">◆</span>Week</a>
-    <a href="#settings" data-route="settings"><span aria-hidden="true">⚙</span>Setup</a>
+    <span class="rail" aria-hidden="true"></span>
+    <a href="#log" data-route="log"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-add"/></svg><span>Log</span></a>
+    <a href="#favorites" data-route="favorites"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-star"/></svg><span>Favs</span></a>
+    <a href="#progress" data-route="progress"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-show_chart"/></svg><span>Charts</span></a>
+    <a href="#calendar" data-route="calendar"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-calendar_today"/></svg><span class="lbl-long">Calendar</span><span class="lbl-short">Cal</span></a>
+    <a href="#week" data-route="week"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-insights"/></svg><span>Week</span></a>
+    <a href="#settings" data-route="settings" class="nav-setup"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-settings"/></svg><span>Setup</span></a>
   </nav>
 
   <main id="main" tabindex="-1">
     <div id="status" class="status" role="status" aria-live="polite"></div>
-    <div id="view"></div>
+    <noscript><p class="empty">Elevation is a free gym log and weekly score app. It needs JavaScript to run. Turn JavaScript on in your browser to log sets and see your progress.</p></noscript>
+    <div id="view" class="view"><h1 class="sr-only">Elevation: Gym Log and Weekly Score</h1></div>
   </main>
 
-  <dialog id="shareDialog" aria-labelledby="shareTitle">
-    <h2 id="shareTitle">Share summary</h2>
-    <canvas id="shareCanvas" width="1080" height="1350" aria-label="Workout summary image"></canvas>
-    <div class="row">
-      <button class="btn" id="shareGo">Share</button>
-      <button class="btn ghost" id="shareSave">Save PNG</button>
-      <button class="btn ghost" id="shareClose">Close</button>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <span id="toastMsg"></span>
+    <button type="button" class="btn tertiary" id="toastAct" hidden></button>
+  </div>
+
+  <dialog id="shareDialog" class="sheet-dialog" aria-labelledby="shareTitle">
+    <div class="dlg-head">
+      <h2 id="shareTitle" tabindex="-1">Share summary</h2>
+      <button type="button" class="icon-btn" data-dialog-close aria-label="Close">
+        <svg class="i" aria-hidden="true" focusable="false"><use href="#i-close"/></svg>
+      </button>
     </div>
+    <canvas id="shareCanvas" class="share-canvas" width="1080" height="1350" aria-label="Workout summary image"></canvas>
+    <div class="row share-row">
+      <button type="button" class="btn primary" id="shareGo">Share</button>
+      <button type="button" class="btn" id="shareSave">Save PNG</button>
+    </div>
+    <p class="status" id="shareStatus" role="status"></p>
   </dialog>
 
-  <script src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>How Elevation works: Gym Log and Weekly Score</title>
+  <meta name="description" content="Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.">
+  <link rel="canonical" href="https://almanalaysay93-gif.github.io/elevation-tracker/intro/">
+  <meta name="theme-color" content="#07090A">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://almanalaysay93-gif.github.io/elevation-tracker/intro/">
+  <meta property="og:title" content="How Elevation works: Gym Log and Weekly Score">
+  <meta property="og:description" content="Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="How Elevation works: Gym Log and Weekly Score">
+  <meta name="twitter:description" content="Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1l7 14H1z' fill='%23c6ff00'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <!-- Fonts do not block first paint: the stylesheet is applied on load; system fallbacks show until then (display=swap). -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="intro.css">
+  <script>
+    /* Runs before first paint: marks JS, reduced motion and the saved theme. */
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      try { if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('rm'); } catch (e) {}
+      try { var t = localStorage.getItem('theme'); if (t) d.dataset.theme = t; } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true">▲</span><span class="brand-word">ELEVATION</span></a>
+    <nav class="progress" aria-label="Story sections">
+      <a href="#s1" aria-current="true" aria-label="Section 1">01</a>
+      <a href="#s2" aria-label="Section 2">02</a>
+      <a href="#s3" aria-label="Section 3">03</a>
+      <a href="#s4" aria-label="Section 4">04</a>
+      <a href="#s5" aria-label="Section 5">05</a>
+      <span class="sr-only" id="progressNow">Section 1 of 5</span>
+    </nav>
+  </header>
+
+  <main id="main" class="story" tabindex="-1">
+    <div class="stage" id="stage" aria-hidden="true">
+      <div class="stage-art" id="stageArt">
+        <canvas id="heroCanvas"></canvas>
+        <div class="fallback">
+          <span class="fb-ring"></span>
+          <div class="fb-row">
+            <div class="fb-stack fb-l"><span></span><span></span><span></span><span></span><span></span></div>
+            <span class="fb-bar"></span>
+            <div class="fb-stack fb-r"><span></span><span></span><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="beats">
+      <section class="beat in" id="s1" aria-labelledby="s1-h">
+        <div class="panel panel--primary">
+          <h1 id="s1-h">Lift. Log. Know if it's working.</h1>
+          <p>Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.</p>
+          <div class="actions">
+            <a class="btn btn--ghost" href="#s2">See how it works</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="beat" id="s2" aria-labelledby="s2-h">
+        <div class="panel">
+          <h2 id="s2-h">Last set, already filled in.</h2>
+          <p>Reps and weight start from your last set on that machine. Change what changed, then tap Log set.</p>
+        </div>
+      </section>
+
+      <section class="beat" id="s3" aria-labelledby="s3-h">
+        <div class="panel">
+          <h2 id="s3-h">Every machine, charted.</h2>
+          <p>Estimated 1-rep max and your top set, plotted session by session. See the trend, not just today.</p>
+        </div>
+      </section>
+
+      <section class="beat" id="s4" aria-labelledby="s4-h">
+        <div class="panel">
+          <h2 id="s4-h">One verdict per week.</h2>
+          <p>PROGRESS, HOLD or DIP. Built from volume, strength change, and how often you trained against your plan.</p>
+        </div>
+      </section>
+
+      <section class="beat" id="s5" aria-labelledby="s5-h">
+        <div class="panel">
+          <h2 id="s5-h">Your data stays in your Sheet.</h2>
+          <p>Paste your Apps Script URL in Setup. Sets save to a Google Sheet you own. No Sheet yet? Start in demo mode.</p>
+          <div class="actions">
+            <a class="btn btn--primary" href="../">Open app</a>
+            <a class="btn btn--ghost" href="../#settings">Connect sheet</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="intro.js"></script>
+</body>
+</html>

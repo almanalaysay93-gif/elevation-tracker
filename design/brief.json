@@ -1,0 +1,24 @@
+{
+  "project": "Elevation gym tracker — design system v2",
+  "deliverable": "web app design direction (no video this pass)",
+  "optionalAgents": {
+    "remotion-agent": {"requested": false, "needed": false, "reason": "HyperFrames is sufficient"},
+    "hairline-agent": {"requested": false, "needed": false, "reason": "No interactive figure requested"},
+    "motionmaxxing-agent": {"requested": false, "needed": false, "reason": "HyperFrames is sufficient"},
+    "opus5-videos-agent": {"requested": false, "needed": false, "reason": "No Opus 5.5 prompt catalog requested"},
+    "ui-ux-pro-max-agent": {"requested": true, "needed": true, "reason": "Full UI/UX design system and audit of v1"},
+    "img2threejs-agent": {"requested": false, "needed": false, "reason": "No 2D reference object image for procedural 3D reconstruction"}
+  },
+  "renderer": {"hyperframes": true, "reason": "Later 9:16 promo reel of the app"},
+  "visualStyle": {
+    "primary": "Motorsport HUD / Telemetry",
+    "secondary": "Swiss data brutalism",
+    "requested": true,
+    "reason": "Premium sporty cyberpunk, no purple, phone-first one-handed",
+    "material": "matte carbon black, 1px hairlines, chamfer cut corner, volt as light source",
+    "motionGrammar": "telemetry tick: snap-in <=200ms, digit roll <=300ms, one scanline sweep for hero beats",
+    "heroBeat": "Set logged -> PR hit: scanline sweep + NEW PR chip",
+    "antiSlop": ["no purple gradients", "no slate card grids", "no glassmorphism", "no emoji icons", "no ambient loops", "no confetti"]
+  },
+  "motionSkillPacks": []
+}

@@ -1,2 +1,12 @@
 node_modules/
 .claude/
+bash.exe.stackdump
+*.stackdump
+graphify-out/
+.buildme/qa/**/*.json
+.buildme/qa/**/*.png
+.buildme/qa/**/*.jpg
+hyperframes/node_modules/
+hyperframes/output/*.log
+hyperframes/.cache/
+hyperframes/.hyperframes/

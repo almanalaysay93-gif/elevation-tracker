@@ -1,0 +1,37 @@
+# Elevation
+
+> Elevation is a free gym log for one lifter. It records every set, charts progress per machine, and gives one weekly verdict (PROGRESS, HOLD or DIP). Your data is saved to a Google Sheet you own.
+
+## What is Elevation?
+
+Elevation is a personal gym tracker for a single lifter who trains on an Upper and Lower split and uses a phone between sets. It is a static web app hosted on GitHub Pages. It has no framework, no account and no sign-in inside the app.
+
+Each set is saved to your own Google Sheet through an Apps Script web app you deploy yourself. Setup steps are in the project README. Without a Sheet, the app runs in demo mode, and data stays in the browser on that device.
+
+Elevation is designed for a phone at the gym (390px wide, used one-handed) and works on a desktop browser (1024px and up) for reviewing charts and the week.
+
+## What does Elevation offer?
+
+- Log a set fast: reps and weight start from your last set on that machine.
+- Weight in kg or lbs, with a live conversion between the two.
+- Intensity tag per set: Easy, Med or Hard.
+- Charts per machine: estimated 1-rep max (Epley formula) and your top set, session by session, with a history list.
+- Favorites grouped as Upper, Lower and Arms & Shoulders.
+- Calendar of logged days and planned days, read from the Schedule tab of your Sheet.
+- Weekly KPI: one Progress Score and verdict per week, with the three components and a per-exercise breakdown.
+- Share a day or a week as a 1080 x 1350 PNG summary image.
+- Reminders by email and Google Calendar, configured in Apps Script.
+- Demo mode with no Sheet needed.
+
+## Why use Elevation?
+
+- Free, and the data lives in your own Google Sheet, not in an app account.
+- The math is public. e1RM = kg x (1 + reps / 30). Score = 0.4 x volume change + 0.4 x average e1RM change + 0.2 x (consistency % - 100). Bands: above +2% is PROGRESS, within plus or minus 2% is HOLD, below -2% is DIP. The first logged week is BASELINE.
+- The week verdict and its reason fit on one screen, with no spreadsheet maths.
+
+## Contact
+
+- URL: https://almanalaysay93-gif.github.io/elevation-tracker/
+- Intro page: https://almanalaysay93-gif.github.io/elevation-tracker/intro/
+- Email: not provided for this site
+- Location: not provided for this site
