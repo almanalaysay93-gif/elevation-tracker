@@ -132,7 +132,7 @@
 
   function normalize(s) {
     s = s || empty();
-    s.exercises = s.exercises || []; s.log = s.log || []; s.schedule = s.schedule || [];
+    s.exercises = (s.exercises || []).filter(e => e && String(e.Name || '').trim()); s.log = s.log || []; s.schedule = s.schedule || [];
     s.exercises.forEach(e => { e.Favorite = e.Favorite === true || e.Favorite === 'TRUE'; });
     s.schedule.forEach(d => { d.Active = d.Active === true || d.Active === 'TRUE'; });
     s.log.forEach(r => ['Set', 'Reps', 'Weight', 'KG', 'LBS', 'Volume', 'E1RM'].forEach(k => { r[k] = Number(r[k]) || 0; }));
