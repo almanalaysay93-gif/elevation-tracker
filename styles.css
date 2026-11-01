@@ -61,6 +61,18 @@ body.signed-out .top,
 body.signed-out .nav,
 body.signed-out #demoBanner { display: none !important; }
 body.signed-out { padding-bottom: var(--s-6); }
+body.signed-out::before {
+  inset: -8%;
+  background-size: 124% 124%;
+  animation: gym-drift 22s ease-in-out infinite alternate;
+}
+@keyframes gym-drift {
+  from { background-position: 30% 38%; }
+  to { background-position: 70% 62%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.signed-out::before { animation: none; inset: 0; background-position: center; background-size: cover; }
+}
 
 /* Scroll reveal. Only added by JS when motion is allowed, so content never stays hidden without it. */
 .landing.reveal-ready [data-reveal] {

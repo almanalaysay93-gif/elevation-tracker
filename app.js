@@ -886,7 +886,7 @@
         <p class="hint mt">${COPY.setPlanNote}</p>
       </section>
 
-      <p class="setup-links"><a href="./intro/">How it works</a></p>`;
+`;
   };
 
   /* ---------- share card ---------- */
