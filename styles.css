@@ -491,7 +491,7 @@ details summary::-webkit-details-marker { display: none; }
    Clay details: photo tiles, nav marker, selects. Decoration is shadow only, never a clip-path.
    ========================================================================== */
 /* Machine photos (hotlinked from the user's sheet). White studio shots sit in a clay well. */
-.ex-photo { display: block; width: 100%; max-width: 380px; aspect-ratio: 3 / 4; height: auto; margin: var(--s-2) auto 0; object-fit: contain; background: #FFFFFF; border: 0; box-shadow: var(--elev-pressed); border-radius: var(--r-sm); padding: var(--s-2); }
+.ex-photo { display: block; width: 100%; max-width: 380px; aspect-ratio: 3 / 4; height: auto; margin: var(--s-2) auto 0; object-fit: cover; object-position: center; background: #FFFFFF; border: 0; box-shadow: var(--elev-pressed); border-radius: var(--r-sm); padding: 0; }
 .fav-card .fav-photo { width: 100%; height: 110px; object-fit: contain; background: #FFFFFF; border: 0; box-shadow: var(--elev-pressed); margin-bottom: var(--s-2); border-radius: var(--r-sm); padding: var(--s-1); }
 /* Native select popups on Windows can render web fonts blank. Use system fonts and explicit colours there (dark clay palette). */
 select, select option, select optgroup { font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
@@ -521,6 +521,35 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
 
 /* Phone: bigger exercise photos (Log form + favourites cards). */
 @media (max-width: 479px) {
-  .ex-photo { padding: var(--s-3); }
+  .ex-photo { padding: 0; }
   .fav-photo { height: 180px; }
+}
+
+/* Loading: clay placeholders shimmer until the first sheet fetch lands. Then the real rows rise in, staggered. */
+.sk-bar { display: block; height: 12px; border-radius: 999px; box-shadow: var(--elev-pressed);
+  background: linear-gradient(90deg, var(--surface-2) 0%, rgb(255 255 255 / 0.08) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%; animation: skShimmer 1.4s ease-in-out infinite; }
+.sk-bar.sk-h { height: 28px; width: 45%; margin: var(--s-2) 0 var(--s-5); }
+.sk-bar.w70 { width: 70%; }
+.sk-bar.w40 { width: 40%; }
+.sk .card > .sk-bar { margin-bottom: var(--s-4); }
+.sk-list li { min-height: 52px; gap: var(--s-3); }
+.sk-list li .sk-bar:first-child { flex: 1; }
+@keyframes skShimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes rowIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+#view.arrive .sets li, #view.arrive .kpi-grid > .card, #view.arrive .fav-card { animation: rowIn var(--dur-base) var(--ease-out) backwards; }
+#view.arrive .sets li:nth-child(2), #view.arrive .kpi-grid > .card:nth-child(2), #view.arrive .fav-card:nth-child(2) { animation-delay: 45ms; }
+#view.arrive .sets li:nth-child(3), #view.arrive .kpi-grid > .card:nth-child(3), #view.arrive .fav-card:nth-child(3) { animation-delay: 90ms; }
+#view.arrive .sets li:nth-child(4), #view.arrive .kpi-grid > .card:nth-child(4), #view.arrive .fav-card:nth-child(4) { animation-delay: 135ms; }
+#view.arrive .sets li:nth-child(n+5), #view.arrive .fav-card:nth-child(n+5) { animation-delay: 180ms; }
+@media (prefers-reduced-motion: reduce) {
+  .sk-bar { animation: none; }
+  #view.arrive .sets li, #view.arrive .kpi-grid > .card, #view.arrive .fav-card { animation: none; }
+}
+
+/* Scroll reveal: items that start below the fold fade and rise once as they enter the viewport (app.js armReveals). */
+.rv { opacity: 0; transform: translateY(16px); transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .rv, .rv.in { opacity: 1; transform: none; transition: none; }
 }

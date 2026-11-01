@@ -114,6 +114,8 @@
   const empty = () => ({ exercises: [], log: [], schedule: [] });
   let base = empty();      // last snapshot from the sheet (or the demo store)
   let state = empty();     // base with the outbox applied on top: what the screen shows
+  let loading = true;      // first sheet fetch still running
+  let justArrived = false; // data just landed after a skeleton: rows should rise in once
   let outbox = ls.get('outbox', []);
   let unit = ls.get('unit', 'kg');
   let lastRoute = null;
@@ -307,14 +309,18 @@
       state = base;
       ls.set('demoState', state);
       setSync('demo'); showBanner(true); setStatus('');
+      loading = false;
       return;
     }
     showBanner(false);
     setStatus(COPY.syncing);
     try {
       base = await fetchState(apiUrl());
+      const firstRun = !ls.get('cache', null);
       ls.set('cache', base);
       state = rebuild(base);
+      loading = false;
+      if (firstRun) justArrived = true;
       setSync('synced');
       setStatus(notify ? COPY.connected : '');
       await flush();
@@ -323,6 +329,7 @@
       console.warn('Load failed', e);
       base = normalize(ls.get('cache', null) || empty());
       state = rebuild(base);
+      loading = false;
       setSync('offline');
       setStatus(e instanceof NetErr ? COPY.offline : COPY.errServer, true);
     }
@@ -1123,15 +1130,65 @@
     return views[r] ? r : 'log';
   }
 
+  // Scroll reveal: cards and rows below the fold fade up once as they enter the viewport.
+  // Only items starting off-screen are armed, so nothing hidden sits above the fold.
+  const revealIO = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          // A fast fling can skip past an item without it ever intersecting. Count it as seen.
+          if (en.isIntersecting || en.boundingClientRect.top < 0) { en.target.classList.add('in'); revealIO.unobserve(en.target); }
+        });
+      }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 })
+    : null;
+
+  // IntersectionObserver does not fire for items jumped over in one scroll. Sweep them on scroll (one frame at most).
+  let revealRaf = 0;
+  window.addEventListener('scroll', () => {
+    if (revealRaf) return;
+    revealRaf = requestAnimationFrame(() => {
+      revealRaf = 0;
+      document.querySelectorAll('.rv:not(.in)').forEach(el => {
+        if (el.getBoundingClientRect().bottom < 0) { el.classList.add('in'); if (revealIO) revealIO.unobserve(el); }
+      });
+    });
+  }, { passive: true });
+
+  function armReveals(view) {
+    if (!revealIO || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const fold = innerHeight * 0.94;
+    view.querySelectorAll('.card, .sets li, .fav-card').forEach(el => {
+      if (el.getBoundingClientRect().top < fold) return;
+      el.classList.add('rv');
+      revealIO.observe(el);
+    });
+  }
+
+  // Shimmer placeholder shown only on the first load, before any sheet data (or cache) exists.
+  function skeleton() {
+    const row = '<li><span class="sk-bar"></span><span class="sk-bar w40"></span></li>';
+    return `<div class="sk">
+      <p class="sr-only" role="status">${esc(COPY.syncing)}</p>
+      <span class="sk-bar sk-h" aria-hidden="true"></span>
+      <section class="card mt" aria-hidden="true"><span class="sk-bar w40"></span>
+        <ul class="sets sk-list">${row.repeat(4)}</ul></section>
+      <section class="card mt" aria-hidden="true"><span class="sk-bar w70"></span>
+        <ul class="sets sk-list">${row.repeat(3)}</ul></section>
+    </div>`;
+  }
+
   function paint() {
     const r = route();
     const changed = r !== lastRoute;
     lastRoute = r;
     const view = $('#view');
     if (!view) return;
+    const skel = loading && !ls.get('cache', null);
+    const arrive = justArrived && !skel;
+    if (arrive) justArrived = false;
     // innerHTML replacement drops focus. Put it back on the same control when the view is unchanged.
     const focusId = !changed && view.contains(document.activeElement) ? document.activeElement.id : '';
-    view.innerHTML = views[r]();
+    view.innerHTML = skel ? skeleton() : views[r]();
+    view.classList.toggle('arrive', arrive);
     if (focusId) { const el = document.getElementById(focusId); if (el) el.focus({ preventScroll: true }); }
     if (changed) {
       view.classList.remove('enter');
@@ -1154,12 +1211,15 @@
     if (ub) ub.textContent = unit;
     setThemeLabel();
 
-    if (r === 'log') updateLogLive();
-    if (r === 'favorites') renderFavBody();
-    if (r === 'week' && changed) {
-      const h = $('#heroScore');
-      if (h && h.dataset.target !== '') countUp(h, Number(h.dataset.target));
+    if (!skel) {
+      if (r === 'log') updateLogLive();
+      if (r === 'favorites') renderFavBody();
+      if (r === 'week' && changed) {
+        const h = $('#heroScore');
+        if (h && h.dataset.target !== '') countUp(h, Number(h.dataset.target));
+      }
     }
+    if (!skel) armReveals(view);
     ui.popFav = '';
   }
 
