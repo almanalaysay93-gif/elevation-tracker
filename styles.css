@@ -474,3 +474,9 @@ details summary::-webkit-details-marker { display: none; }
 select, select option, select optgroup { font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
 select option { color: #F5F5F5; background-color: #1B1B1B; }
 select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
+
+/* Phone spacing overrides (end of file so they beat base gap rules). */
+@media (max-width: 479px) {
+  .kpi-grid, .grid, .two { gap: var(--s-5); }
+  .kpi-grid { margin-bottom: var(--s-5); }
+}
