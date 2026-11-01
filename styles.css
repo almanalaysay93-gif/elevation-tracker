@@ -488,3 +488,10 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
   .ex-row { gap: var(--s-4); margin-top: var(--s-1); }
   form.stack { gap: var(--s-6); }
 }
+
+/* Phone: exercise finder spacing (search input -> machine dropdown -> favourite star). */
+@media (max-width: 479px) {
+  .field { gap: var(--s-5); }
+  .field .hint:empty { display: none; }
+  .ex-row { gap: var(--s-5); margin-top: var(--s-2); }
+}
