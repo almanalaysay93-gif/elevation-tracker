@@ -1,7 +1,6 @@
-// Elevation intro: one normalized scroll value drives one procedural barbell.
-// Three.js pinned to an exact version (minified build, about 167 KB gzip). Loaded after first paint and idle,
-// so the text paints first. No GSAP, no Lenis. Scroll is native.
-const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js';
+// The scroll and pointer move a procedural barbell over a second gym depth layer.
+// Three.js stays local to avoid a CDN dependency and loads after the page text.
+const THREE_URL = '../assets/three.module.js';
 
 const root = document.documentElement;
 const reduceQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -83,7 +82,7 @@ async function initHero() {
   try {
     THREE = await import(THREE_URL);
   } catch (err) {
-    return; // CDN blocked: CSS fallback stays visible
+    return; // Module unavailable: CSS fallback stays visible
   }
 
   let renderer;
@@ -97,19 +96,20 @@ async function initHero() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
 
-  // Procedural barbell: bar, plates, collars. Volt solid, cyan wireframe edges.
-  const volt = new THREE.MeshStandardMaterial({ color: 0xc6ff00, metalness: 0.3, roughness: 0.55 });
-  const cyan = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.8 });
-  const dark = new THREE.MeshStandardMaterial({ color: 0x0f1314, metalness: 0.1, roughness: 0.8 });
+  // Brushed steel bar, graphite plates, restrained red collars.
+  const steel = new THREE.MeshStandardMaterial({ color: 0xa7b0ba, metalness: 0.85, roughness: 0.32 });
+  const red = new THREE.MeshStandardMaterial({ color: 0xc8161f, metalness: 0.48, roughness: 0.42 });
+  const edge = new THREE.LineBasicMaterial({ color: 0xb7c0c6, transparent: true, opacity: 0.38 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x24272a, metalness: 0.58, roughness: 0.55 });
 
   const group = new THREE.Group();
   const geometries = [];
-  const materials = [volt, cyan, dark];
+  const materials = [steel, red, edge, dark];
 
   const bar = new THREE.CylinderGeometry(0.04, 0.04, 3.6, 20);
   bar.rotateZ(Math.PI / 2);
   geometries.push(bar);
-  group.add(new THREE.Mesh(bar, volt));
+  group.add(new THREE.Mesh(bar, steel));
 
   function addPlate(x, radius, thickness, mat) {
     const g = new THREE.CylinderGeometry(radius, radius, thickness, 32);
@@ -120,7 +120,7 @@ async function initHero() {
     group.add(m);
     const edges = new THREE.EdgesGeometry(g, 20);
     geometries.push(edges);
-    const line = new THREE.LineSegments(edges, cyan);
+    const line = new THREE.LineSegments(edges, edge);
     line.position.x = x;
     group.add(line);
   }
@@ -129,13 +129,16 @@ async function initHero() {
     addPlate(x, r, 0.14, dark);
     addPlate(-x, r, 0.14, dark);
   });
-  [1.05, -1.05].forEach((x) => addPlate(x, 0.12, 0.12, volt));
+  [1.05, -1.05].forEach((x) => addPlate(x, 0.12, 0.12, red));
   scene.add(group);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
   const key = new THREE.DirectionalLight(0xffffff, 1.1);
   key.position.set(2, 3, 4);
   scene.add(key);
+  const rimLight = new THREE.PointLight(0xc8161f, 9, 9);
+  rimLight.position.set(3, -1, 3);
+  scene.add(rimLight);
 
   let zoom = 1;
   function resize() {
@@ -151,10 +154,10 @@ async function initHero() {
 
   function renderAt(p) {
     const k = sampleKeyframe(p);
-    camera.position.set(k.pos[0] * zoom, k.pos[1] * zoom, k.pos[2] * zoom);
+    camera.position.set(k.pos[0] * zoom + pointerX * 0.26, k.pos[1] * zoom - pointerY * 0.18, k.pos[2] * zoom);
     camera.lookAt(0, 0, 0);
-    group.rotation.y = k.rot;
-    group.rotation.x = 0.18;
+    group.rotation.y = k.rot + pointerX * 0.12;
+    group.rotation.x = 0.18 + pointerY * 0.07;
     // Wide screens: the object sits right of centre, clear of the text panel.
     const wide = camera.aspect >= 1;
     group.position.x = wide ? 0.9 : 0;
@@ -192,20 +195,35 @@ let raf = 0;
 let lastP = -1;
 let needsResize = false;
 let stageVisible = true;
+let pointerX = 0;
+let pointerY = 0;
+let lastPointerX = 0;
+let lastPointerY = 0;
+
+function updateBackdrop(p) {
+  if (reduced()) return;
+  root.style.setProperty('--parallax-scroll', (-p * 28).toFixed(1) + 'px');
+  root.style.setProperty('--parallax-x', (pointerX * -16).toFixed(1) + 'px');
+  root.style.setProperty('--parallax-y', (pointerY * -12).toFixed(1) + 'px');
+}
 
 function tick() {
   raf = requestAnimationFrame(tick);
   if (!gl || document.hidden || !stageVisible) return;
   const p = readProgress();
-  if (!needsResize && Math.abs(p - lastP) < 1e-5) return;
+  if (!needsResize && Math.abs(p - lastP) < 1e-5 && Math.abs(pointerX - lastPointerX) < 1e-3 && Math.abs(pointerY - lastPointerY) < 1e-3) return;
   if (needsResize) { gl.resize(); needsResize = false; }
   lastP = p;
+  lastPointerX = pointerX;
+  lastPointerY = pointerY;
+  updateBackdrop(p);
   try { gl.renderAt(p); } catch (err) { root.classList.remove('webgl'); }
   updateSection();
 }
 
 function onScrollStatic() {
   updateSection();
+  if (!gl) updateBackdrop(readProgress());
 }
 
 // Run fn after the window load event and browser idle time, so the text is painted before three.js is fetched.
@@ -221,6 +239,16 @@ function whenIdle(fn) {
 function start() {
   setupReveals();
   updateSection();
+  updateBackdrop(readProgress());
+
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    window.addEventListener('pointermove', (event) => {
+      if (reduced()) return;
+      pointerX = (event.clientX / innerWidth - 0.5) * 2;
+      pointerY = (event.clientY / innerHeight - 0.5) * 2;
+      if (!gl) updateBackdrop(readProgress());
+    }, { passive: true });
+  }
 
   whenIdle(() => initHero().then((ok) => {
     if (!ok || !gl) return;
@@ -256,10 +284,19 @@ function renderStatic() {
 }
 
 reduceQuery.addEventListener?.('change', () => {
+  root.classList.toggle('rm', reduced());
   // Switching reduced motion on mid-session: stop the loop and freeze the frame.
   if (reduced() && gl) {
     cancelAnimationFrame(raf);
+    pointerX = 0;
+    pointerY = 0;
+    root.style.setProperty('--parallax-scroll', '0px');
+    root.style.setProperty('--parallax-x', '0px');
+    root.style.setProperty('--parallax-y', '0px');
     renderStatic();
+  } else if (gl) {
+    lastP = -1;
+    raf = requestAnimationFrame(tick);
   }
 });
 

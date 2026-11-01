@@ -3,6 +3,9 @@
 :root {
   /* Intro chamfer. Panels and the primary CTA use 8px cuts. */
   --intro-cut: 8px;
+  --parallax-x: 0px;
+  --parallax-y: 0px;
+  --parallax-scroll: 0px;
 }
 
 *,
@@ -70,8 +73,30 @@ p { margin: 0; }
 /* Fixed hero stage behind the text */
 .stage {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    linear-gradient(to bottom, var(--bg) 0%, transparent 18%, transparent 60%, var(--bg) 100%);
+  overflow: hidden;
+  background: var(--bg);
+}
+.stage-photo {
+  position: absolute;
+  inset: -5%;
+  background: url("../assets/gym-background.webp") center / cover no-repeat;
+  opacity: 0.72;
+  transform: translate3d(var(--parallax-x), calc(var(--parallax-y) + var(--parallax-scroll)), 0) scale(1.04);
+  will-change: transform;
+}
+.stage-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(9 10 11 / 0.68), rgb(9 10 11 / 0.12) 70%),
+              linear-gradient(to bottom, var(--bg), transparent 24%, transparent 72%, var(--bg));
+}
+:root[data-theme="light"] .stage-photo {
+  background-image: url("../assets/gym-background-light.webp");
+  opacity: 0.55;
+}
+:root[data-theme="light"] .stage-shade {
+  background: linear-gradient(90deg, rgb(236 233 230 / 0.72), rgb(236 233 230 / 0.12) 70%),
+              linear-gradient(to bottom, var(--bg), transparent 24%, transparent 72%, var(--bg));
 }
 .stage-art { position: absolute; inset: 0; }
 #heroCanvas { display: none; position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -110,11 +135,12 @@ html.webgl .fallback { display: none; }
 .panel {
   width: 100%; max-width: 520px;
   padding: 20px 20px 22px;
-  background: color-mix(in oklch, var(--surface) 92%, transparent);
+  background: color-mix(in oklch, var(--surface) 95%, transparent);
   border: 1px solid var(--line);
   clip-path: polygon(var(--intro-cut) 0, 100% 0, 100% calc(100% - var(--intro-cut)), calc(100% - var(--intro-cut)) 100%, 0 100%, 0 var(--intro-cut));
 }
-.panel--primary { border-color: var(--control); }
+.panel--primary { border-color: var(--control); box-shadow: inset 4px 0 0 var(--accent); }
+.eyebrow { display: block; color: var(--accent-text); font-family: var(--font-mono); font-size: var(--fs-sm); margin-bottom: 14px; }
 .panel p + p, .panel h1 + p, .panel h2 + p { margin-top: 12px; }
 .panel p { color: var(--text); }
 
@@ -146,6 +172,7 @@ html.js.rm .beat .panel {
   transition: opacity var(--dur-fast) linear !important;
 }
 @media (prefers-reduced-motion: reduce) {
+  .stage-photo { transform: none; will-change: auto; }
   html.js .beat .panel { transform: none; transition: opacity var(--dur-fast) linear; }
   html .btn { transition: none; }
 }
@@ -154,6 +181,6 @@ html.js.rm .beat .panel {
 @media (min-width: 900px) {
   .top { padding: 4px 32px; }
   .beat { align-items: center; padding: 96px 0 96px 6vw; }
-  .panel { max-width: 460px; }
+  .panel { max-width: 510px; padding: 28px 30px 30px; }
   .fb-row { transform: translateX(22vw); }
 }

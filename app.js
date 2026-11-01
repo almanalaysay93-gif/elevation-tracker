@@ -55,7 +55,7 @@
     errReps: 'Enter reps and weight.',
     errNoEx: 'Pick an exercise first.',
     errDupe: 'That machine is already on the list.',
-    signIn: 'Sign in with Google to see and save your own sets.',
+    signIn: 'Continue with Google. New here? Your account is created the first time you sign in, and your sets are saved to it.',
     signInWait: 'Loading Google sign-in…',
     signInFail: "Google sign-in didn't work. Try again.",
     authExpired: 'Your sign-in expired. Sign in again to save your sets.',
@@ -1276,12 +1276,50 @@
   }
   function signInView() {
     return `
-      <section class="card stack signin">
-        <h2>Sign in</h2>
-        <p class="hint">${COPY.signIn}</p>
-        <div id="gsiBtn" class="gsi-slot" style="display:flex;justify-content:center;min-height:44px"></div>
-        <p class="hint" id="gsiNote">${COPY.signInWait}</p>
+      <section class="landing" aria-labelledby="landingTitle">
+        <div class="landing-copy">
+          <p class="landing-eyebrow">Elevation</p>
+          <h1 class="landing-title" id="landingTitle">Track every set. Beat last session.</h1>
+          <p class="landing-lede" data-reveal>Log your lifts, plan your split for the week, and see your progress over time. Your sets are saved to your own account.</p>
+          <ul class="landing-points" data-reveal>
+            <li><span class="landing-dot" aria-hidden="true"></span>Log sets with weight, reps and intensity</li>
+            <li><span class="landing-dot" aria-hidden="true"></span>Plan each day as upper, lower or rest</li>
+            <li><span class="landing-dot" aria-hidden="true"></span>Charts and calendar show what changed</li>
+          </ul>
+        </div>
+        <div class="landing-side">
+          <div class="landing-phone" aria-hidden="true" data-reveal>
+            <div class="landing-phone-head">Sample session</div>
+            <div class="landing-phone-row"><span>Bench press</span><b>60 kg × 8</b></div>
+            <div class="landing-phone-row"><span>Lat pulldown</span><b>45 kg × 10</b></div>
+            <div class="landing-phone-row"><span>Shoulder press</span><b>24 kg × 10</b></div>
+          </div>
+          <section class="card landing-signin" data-reveal aria-labelledby="signinTitle">
+            <h2 id="signinTitle">Start logging</h2>
+            <p class="hint">${COPY.signIn}</p>
+            <div id="gsiBtn" class="gsi-slot" style="display:flex;justify-content:center;min-height:44px"></div>
+            <p class="hint" id="gsiNote">${COPY.signInWait}</p>
+          </section>
+        </div>
       </section>`;
+  }
+  // Scroll reveal for the signed-out page. Only runs with motion allowed and IntersectionObserver present.
+  // Content is visible without it: .reveal-ready is added here, so no JS means no hidden content.
+  function mountReveal() {
+    try {
+      const root = document.querySelector('.landing');
+      const items = root ? Array.from(root.querySelectorAll('[data-reveal]')) : [];
+      if (!items.length || !('IntersectionObserver' in window)) return;
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      root.classList.add('reveal-ready');
+      const show = el => { el.classList.add('is-in'); io.unobserve(el); };
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) show(e.target); });
+      }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+      items.forEach(el => io.observe(el));
+      // Fallback: never leave content hidden if the observer does not fire (background tab, zero-height viewport).
+      setTimeout(() => items.forEach(el => el.classList.add('is-in')), 1500);
+    } catch (e) { /* observer blocked: content stays visible */ }
   }
   function mountSignIn() {
     whenGsi(() => {
@@ -1329,11 +1367,15 @@
     const view = $('#view');
     if (!view) return;
     if (authOn() && !signedIn()) {
+      // Signed out: one landing + sign-up page. No app header, tab bar or demo banner.
+      document.body.classList.add('signed-out');
       view.innerHTML = signInView();
       mountSignIn();
+      mountReveal();
       $$('.nav a[data-route]').forEach(a => a.removeAttribute('aria-current'));
       return;
     }
+    document.body.classList.remove('signed-out');
     const skel = loading && !ls.get('cache', null);
     const arrive = justArrived && !skel;
     if (arrive) justArrived = false;

@@ -33,6 +33,46 @@ body::before {
 }
 .gym-scene canvas { display: block; width: 100%; height: 100%; }
 main, .banner { position: relative; z-index: 1; }
+
+/* Signed-out landing page. Phone-first; two columns from 900px. Tokens only. */
+.landing { display: grid; gap: var(--s-5); padding: var(--s-4) 0 var(--s-3); }
+.landing-eyebrow { margin: 0 0 var(--s-2); font-family: var(--font-display); font-weight: 700; font-size: var(--fs-xs); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--accent-text); }
+.landing-title { margin: 0 0 var(--s-3); font-family: var(--font-display); font-weight: 700; font-size: var(--fs-3xl); line-height: 1.05; text-transform: uppercase; color: var(--text); text-wrap: balance; }
+.landing-lede { margin: 0 0 var(--s-4); color: var(--muted); font-size: var(--fs-lg); line-height: 1.45; max-width: 36ch; }
+.landing-points { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+.landing-points li { display: flex; align-items: center; gap: var(--s-3); color: var(--text); }
+.landing-dot { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.landing-side { display: grid; gap: var(--s-4); align-content: start; }
+.landing-phone { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--elev-1); padding: var(--s-4); display: grid; gap: var(--s-3); max-width: 340px; }
+.landing-phone-head { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-xs); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--muted); }
+.landing-phone-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); padding: var(--s-3); background: var(--surface-2); border-radius: var(--r-md); box-shadow: var(--elev-control); }
+.landing-phone-row b { font-family: var(--font-display); font-weight: 600; color: var(--accent-text); white-space: nowrap; }
+.landing-signin { margin: 0; display: grid; gap: var(--s-3); }
+.landing-signin h2 { margin: 0; font-family: var(--font-display); font-weight: 600; text-transform: uppercase; }
+.landing-signin .hint { margin: 0; }
+@media (min-width: 900px) {
+  .landing { grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: var(--s-6); padding-top: var(--s-6); }
+  .landing-title { font-size: var(--fs-hero); }
+}
+@media (prefers-reduced-motion: reduce) { .landing * { transition: none !important; animation: none !important; } }
+
+/* Signed out: app chrome hidden. The landing page is the whole screen. */
+body.signed-out .top,
+body.signed-out .nav,
+body.signed-out #demoBanner { display: none !important; }
+body.signed-out { padding-bottom: var(--s-6); }
+
+/* Scroll reveal. Only added by JS when motion is allowed, so content never stays hidden without it. */
+.landing.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 600ms cubic-bezier(.2,.7,.2,1), transform 600ms cubic-bezier(.2,.7,.2,1);
+  will-change: opacity, transform;
+}
+.landing.reveal-ready [data-reveal].is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .landing.reveal-ready [data-reveal] { opacity: 1; transform: none; transition: none; will-change: auto; }
+}
 :root[data-theme="light"] body::before {
   background: linear-gradient(rgb(236 233 230 / 0.55), rgb(236 233 230 / 0.7)), url("assets/gym-background-light.webp") center / cover no-repeat;
 }

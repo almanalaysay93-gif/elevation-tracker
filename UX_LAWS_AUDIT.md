@@ -1,3 +1,48 @@
+# UX Laws Audit: Signed-out landing + sign-up page
+
+Scope: signed-out view only (`body.signed-out`). Signed-in app unchanged.
+Evidence: headless Chromium (Playwright) at 390×844 and 1280×800, plus reduced-motion emulation. Screenshots in the scratchpad: `signedout-phone.png`, `signedout-desktop.png`.
+Limit: the Google Identity script was blocked in the test, so the real Google button's rendered size and its sign-in round trip were not measured. Those rows say so.
+
+| # | Law | Status | Evidence | Fix / note |
+|---|---|---|---|---|
+| 1 | Fitts's Law (target size and distance) | Compliant | `#gsiBtn` slot has `min-height:44px`; the one primary action is the only control on the page. | Rendered Google button height not measured (script blocked). |
+| 2 | Hick's Law (fewer choices) | Compliant | One action: Google sign-in/sign-up. No tabs, no second path, no forms. | None. |
+| 3 | Jakob's Law (familiar patterns) | Compliant | Standard Google "Continue with" button; familiar landing layout (hero left, card right on desktop, stacked on phone). | None. |
+| 4 | Miller's Law (chunking) | Compliant | Three short bullets; sample session shows three rows. | None. |
+| 5 | Tesler's Law (complexity stays with the system) | Compliant | Account creation and sign-in are the same step; the copy explains that the account is created on first sign-in, so the user does not choose a mode. | None. |
+| 6 | Aesthetic-Usability Effect | Compliant | Claymorphism tokens, red/charcoal/white palette, consistent radii and shadows. Screenshots look intentional. | None. |
+| 7 | Doherty Threshold (response under 400 ms) | Partial | Sign-in UI shows "Loading Google sign-in…" until the script is ready. Load time depends on Google's script. | Status text is shown immediately. Not measured on a real network. |
+| 8 | Peak-End Rule | Compliant | Strong hero headline at the start; the sign-in card is the closing action with a clear next step. | None. |
+| 9 | Serial Position Effect | Compliant | The key message (headline) is first; the action is last, which is where the eye ends on phone. | None. |
+| 10 | Von Restorff Effect (isolation) | Compliant | The red accent is used only for the eyebrow, bullets and numbers in the sample; the sign-in card is the single raised surface with the action. | None. |
+| 11 | Pareto Principle | Compliant | Only the sign-in action matters for conversion; it is the only interactive element. | None. |
+| 12 | Occam's Razor | Compliant | No extra sections, stats or testimonials (none invented). | None. |
+| 13 | Postel's Law (be lenient) | Partial | If the Google script fails, the page shows "Loading Google sign-in…" with no retry. The `signInFail` message exists for failed sign-in but not for a failed script load. | Follow-up: show a retry message when the script never loads. Not changed in this pass. |
+| 14 | Zeigarnik Effect | Compliant | The sample session shows a partly finished workout (three exercises with sets), which invites the user to start logging. | None. |
+
+## Accessibility and motion checks (supporting the laws)
+
+- One `h1` (hero), `h2` for the sign-in card. No skipped levels.
+- The sample phone is `aria-hidden="true"`; the copy around it carries the meaning.
+- Horizontal overflow: 0px at 390px and 1280px.
+- Header, tab bar and demo banner: `display: none` while signed out (verified). Hidden on both sizes.
+- Scroll reveal: only added when `prefers-reduced-motion` is not set and `IntersectionObserver` exists. With reduced motion, `.reveal-ready` is not added and all content is visible (verified: `revealReady: false`, all opacities 1).
+- Content is visible without JavaScript for the reveal (the reveal class is added by JS only).
+
+## Known issues found during this audit (not fixed in this pass)
+
+1. `assets/three.core.js` is missing from the repo. `assets/three.module.js` imports it, so the 3D gym scene fails silently with a 404. Pre-existing; the CSS photo background still shows. Fix: vendor `three.core.js` next to `three.module.js`.
+2. Law 13 (Postel): no retry message if the Google script fails to load.
+
+## Re-audit
+
+After the fixes above, re-run `signedout-check.mjs` and confirm the rows still hold. Issues 1 and 2 are open.
+
+---
+
+# Previous audit (Volt Telemetry build, a9ca584)
+
 # UX Laws Audit: Elevation app (Wave 5 checker)
 
 Date: 2026-11-01. Scope: the app (`index.html`, `styles.css`, `app.js`). Intro has its own audit at `intro/UX_LAWS_AUDIT.md`.

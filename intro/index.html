@@ -3,21 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>How Elevation works: Gym Log and Weekly Score</title>
-  <meta name="description" content="Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.">
+  <title>Elev tracker | Log every lift. See your progress.</title>
+  <meta name="description" content="Log each set, chart your strength, and see your weekly progress with Elev tracker.">
   <link rel="canonical" href="https://almanalaysay93-gif.github.io/elevation-tracker/intro/">
   <meta name="theme-color" content="#07090A">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://almanalaysay93-gif.github.io/elevation-tracker/intro/">
-  <meta property="og:title" content="How Elevation works: Gym Log and Weekly Score">
-  <meta property="og:description" content="Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.">
+  <meta property="og:title" content="Elev tracker | Log every lift. See your progress.">
+  <meta property="og:description" content="Log each set, chart your strength, and see your weekly progress with Elev tracker.">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="How Elevation works: Gym Log and Weekly Score">
-  <meta name="twitter:description" content="Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1l7 14H1z' fill='%23c6ff00'/%3E%3C/svg%3E">
+  <meta name="twitter:title" content="Elev tracker | Log every lift. See your progress.">
+  <meta name="twitter:description" content="Log each set, chart your strength, and see your weekly progress with Elev tracker.">
+  <link rel="icon" href="../icons/app-icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <!-- Fonts do not block first paint: the stylesheet is applied on load; system fallbacks show until then (display=swap). -->
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
@@ -29,7 +28,8 @@
       var d = document.documentElement;
       d.classList.add('js');
       try { if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('rm'); } catch (e) {}
-      try { var t = localStorage.getItem('theme'); if (t) d.dataset.theme = t; } catch (e) {}
+      d.dataset.theme = 'dark';
+      try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') d.dataset.theme = t; } catch (e) {}
     })();
   </script>
 </head>
@@ -37,7 +37,7 @@
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="top">
-    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true">▲</span><span class="brand-word">ELEVATION</span></a>
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true">▲</span><span class="brand-word">Elev tracker</span></a>
     <nav class="progress" aria-label="Story sections">
       <a href="#s1" aria-current="true" aria-label="Section 1">01</a>
       <a href="#s2" aria-label="Section 2">02</a>
@@ -50,6 +50,8 @@
 
   <main id="main" class="story" tabindex="-1">
     <div class="stage" id="stage" aria-hidden="true">
+      <div class="stage-photo"></div>
+      <div class="stage-shade"></div>
       <div class="stage-art" id="stageArt">
         <canvas id="heroCanvas"></canvas>
         <div class="fallback">
@@ -66,9 +68,11 @@
     <div class="beats">
       <section class="beat in" id="s1" aria-labelledby="s1-h">
         <div class="panel panel--primary">
+          <span class="eyebrow">Strength, measured</span>
           <h1 id="s1-h">Lift. Log. Know if it's working.</h1>
-          <p>Elevation logs every set and tells you, week by week, whether you're progressing. One lifter. One Sheet. Free.</p>
+          <p>Elev tracker logs each set and shows whether your strength is moving up, week by week.</p>
           <div class="actions">
+            <a class="btn btn--primary" href="../">Open app</a>
             <a class="btn btn--ghost" href="#s2">See how it works</a>
           </div>
         </div>
