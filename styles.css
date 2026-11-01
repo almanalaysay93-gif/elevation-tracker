@@ -167,9 +167,10 @@ select option, select optgroup { background: var(--surface); color: var(--text);
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); clip-path: var(--clip-cut); }
 .btn.ghost, .btn.tertiary { background: transparent; }
 .btn.wide { width: 100%; }
-.btn.cta { min-height: var(--cta-h); width: 100%; font-size: var(--fs-lg); position: sticky; bottom: calc(var(--tabbar-total) + var(--s-2)); z-index: 5; }
-/* Phone: the pinned Log set bar sits over the bottom of the form. Reserve its height plus the tab bar so the last fields scroll clear. */
-#setForm { padding-bottom: calc(var(--cta-h) + var(--tabbar-total)); }
+/* Phone: the Log set button sits in the normal flow under the form, so it never covers fields while scrolling.
+   The fixed tab bar is cleared by body padding-bottom. */
+.btn.cta { min-height: var(--cta-h); width: 100%; font-size: var(--fs-lg); position: relative; }
+#setForm { padding-bottom: var(--s-4); }
 .btn[disabled] { opacity: .5; }
 
 /* ---------- Log ---------- */
