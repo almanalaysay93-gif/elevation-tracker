@@ -1,7 +1,7 @@
 {
   "name": "Elev tracker: Gym Log and Weekly Score",
   "short_name": "Elev tracker",
-  "description": "Log sets in kg or lbs, chart progress per machine, and get a weekly Progress Score. Free. Your data stays in your own Google Sheet.",
+  "description": "Log sets in kg or lbs, chart progress per machine, and get a weekly Progress Score. Free. Your data stays in your own database.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

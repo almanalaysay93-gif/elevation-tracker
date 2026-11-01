@@ -43,14 +43,14 @@
 
   /* Strings from copy/COPY.md. Keep in step with that file. */
   const COPY = {
-    demo: 'Demo mode. Data stays on this device. Connect your sheet in Setup.',
-    syncing: 'Syncing with your Google Sheet…',
+    demo: 'Demo mode. Data stays on this device. Connect your database in Setup.',
+    syncing: 'Syncing with your database…',
     saving: 'Saving…',
-    saved: 'Saved to your Google Sheet.',
-    connected: 'Connected. Sheet synced.',
+    saved: 'Saved to your database.',
+    connected: 'Connected. Database synced.',
     offline: 'Offline. Showing last synced data.',
-    errSheet: "Couldn't reach your sheet. Check the URL in Setup.",
-    errServer: 'Your sheet returned an error. Check Setup.',
+    errSheet: "Couldn't reach your database. Check the URL in Setup.",
+    errServer: 'Your database returned an error. Check Setup.',
     errSave: "Couldn't save. Try again.",
     errReps: 'Enter reps and weight.',
     errNoEx: 'Pick an exercise first.',
@@ -93,7 +93,7 @@
     calEmptyPlan: (s) => `${s} day. Nothing logged yet.`,
     calEmptyRest: 'Rest day.',
     setPlanEmpty: 'No schedule found. Add rows to the Schedule tab.',
-    setPlanNote: 'Pick a split for each day. Reminders read the same plan from your Sheet.',
+    setPlanNote: 'Pick a split for each day. Reminders read the same plan from your database.',
     shareCardDay: (s) => (s ? `${s} DAY` : 'WORKOUT'),
   };
 
@@ -1366,7 +1366,7 @@
               <ul class="st-perks">
                 <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg><span>Sets, reps and weight in two taps</span></li>
                 <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg><span>Charts for every lift</span></li>
-                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg><span>Your data stays in your Google Sheet</span></li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6 11-11-1.4-1.4z"/></svg><span>Your data stays in your own database</span></li>
               </ul>
               <div class="st-gwrap"><div id="gsiBtn" class="st-gslot"></div></div>
               <p class="st-auth-status" id="gsiNote" role="status" aria-live="polite">${COPY.signInWait}</p>
