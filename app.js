@@ -55,6 +55,12 @@
     errReps: 'Enter reps and weight.',
     errNoEx: 'Pick an exercise first.',
     errDupe: 'That machine is already on the list.',
+    signIn: 'Sign in with Google to see and save your own sets.',
+    signInWait: 'Loading Google sign-in…',
+    signInFail: "Google sign-in didn't work. Try again.",
+    authExpired: 'Your sign-in expired. Sign in again to save your sets.',
+    signOutWait: 'Still saving your last sets. Sign out once they are saved.',
+    signOutDone: 'Signed out on this device.',
     errName: 'Name the exercise.',
     shareFallback: "Sharing isn't on in this browser. Image saved instead.",
     undo: 'Undo',
@@ -147,9 +153,19 @@
   };
 
   // Built-in Apps Script /exec so every device connects without Setup. A URL saved in Setup still overrides it.
-  const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbyNPstKLBQoFA9xmej1SEr784Nfd-Zc41fIEq5HbNtSBSA1AbDly0de30R84woHbU8c/exec';
+  const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbwYgjZYVIl4YzE95QJL04ifv_ZTfV0ssYq4GcQDseXW-67WaLKMkGj27Ts4j-CwFZ_z/exec';
   const apiUrl = () => ls.get('apiUrl', '') || DEFAULT_API_URL;
   const isDemo = () => !apiUrl();
+
+  /* Google sign-in. GOOGLE_CLIENT_ID is the OAuth "Web application" client ID from Google Cloud.
+     Blank = no sign-in (single-owner mode, same as before). */
+  const GOOGLE_CLIENT_ID = '569340354084-qn29fee1t48hpk5ivp4a5f2vth838hnp.apps.googleusercontent.com';
+  const authOn = () => !!GOOGLE_CLIENT_ID;
+  let session = ls.get('session', null); // { token, email, name, picture, exp } from Google's ID token
+  const signedIn = () => !!(session && session.token && session.exp * 1000 > Date.now() + 30000);
+  const tok = () => (authOn() && signedIn()) ? session.token : '';
+  const isAuthErr = e => e instanceof SrvErr && /^AUTH:/.test(e.message);
+  function expireSession() { session = null; ls.set('session', null); }
 
   const IMG = {}; (window.EQUIPMENT || []).forEach(r => { if (r[3]) IMG[r[0]] = r[3]; });
   const exImg = (name, cls) => IMG[name] ? `<img class="${cls}" src="${esc(IMG[name])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">` : '';
@@ -226,9 +242,10 @@
     if (!j || !j.ok) throw new SrvErr((j && j.error) || 'Not ok');
     return normalize(j.state);
   }
-  const fetchState = url => call(url, { redirect: 'follow' });
+  const withTok = url => { const t = tok(); return t ? url + (url.includes('?') ? '&' : '?') + 'idToken=' + encodeURIComponent(t) : url; };
+  const fetchState = url => call(withTok(url), { redirect: 'follow' });
   // text/plain avoids a CORS preflight, which Apps Script cannot answer.
-  const postAction = (url, body) => call(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), redirect: 'follow' });
+  const postAction = (url, body) => call(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...body, idToken: tok() || undefined }), redirect: 'follow' });
 
   /* ---------- sync ---------- */
   function setSync(s) {
@@ -260,7 +277,7 @@
   }
 
   async function flush() {
-    if (flushing || isDemo()) return;
+    if (flushing || isDemo() || (authOn() && !signedIn())) return;
     flushing = true;
     try {
       if (!outbox.length) { setSync('synced'); return; }
@@ -279,6 +296,8 @@
         } catch (e) {
           inFlight = null;
           if (e instanceof NetErr) { setSync('offline'); setStatus(COPY.offline, true); paint(); return; }
+          // Sign-in expired: keep the queue, ask for sign-in again, send nothing else until then.
+          if (isAuthErr(e)) { expireSession(); setSync('offline'); setStatus(COPY.authExpired, true); paint(); return; }
           // The sheet rejected this write. Drop it so the queue can move on, and say so.
           console.warn('Write rejected', e);
           dropItem(item.id);
@@ -313,6 +332,7 @@
       loading = false;
       return;
     }
+    if (authOn() && !signedIn()) { loading = false; setStatus(''); return; } // the sign-in screen takes over
     showBanner(false);
     setStatus(COPY.syncing);
     try {
@@ -328,6 +348,7 @@
       if (notify && !outbox.length) setStatus(COPY.connected);
     } catch (e) {
       console.warn('Load failed', e);
+      if (isAuthErr(e)) { expireSession(); loading = false; setStatus(COPY.authExpired, true); return; }
       base = normalize(ls.get('cache', null) || empty());
       state = rebuild(base);
       loading = false;
@@ -832,6 +853,11 @@
     const url = apiUrl();
     const dark = currentTheme() === 'dark';
     return `
+      ${authOn() && session ? `<section class="card stack">
+        <h2>Account</h2>
+        <p class="hint">Signed in as ${esc(session.email)}. Your sets and machines are yours alone.</p>
+        <button type="button" class="btn ghost" id="signOut">Sign out</button>
+      </section>` : ''}
       <section class="card stack">
         <div class="field">
           <span class="label" id="unitLbl">Display unit</span>
@@ -1230,12 +1256,84 @@
     </div>`;
   }
 
+  /* ---------- sign-in ---------- */
+  let gsiReady = false;
+  function decodeJwt(t) {
+    try {
+      const b = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(decodeURIComponent(atob(b).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+    } catch (e) { return null; }
+  }
+  // Google's script loads async. Wait for it, then set up once.
+  function whenGsi(fn, tries = 0) {
+    if (window.google && google.accounts && google.accounts.id) {
+      if (!gsiReady) {
+        gsiReady = true;
+        google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: onCredential, auto_select: true, cancel_on_tap_outside: false });
+      }
+      fn();
+    } else if (tries < 80) setTimeout(() => whenGsi(fn, tries + 1), 150);
+  }
+  function signInView() {
+    return `
+      <section class="card stack signin">
+        <h2>Sign in</h2>
+        <p class="hint">${COPY.signIn}</p>
+        <div id="gsiBtn" class="gsi-slot" style="display:flex;justify-content:center;min-height:44px"></div>
+        <p class="hint" id="gsiNote">${COPY.signInWait}</p>
+      </section>`;
+  }
+  function mountSignIn() {
+    whenGsi(() => {
+      const el = document.getElementById('gsiBtn');
+      if (!el) return;
+      google.accounts.id.renderButton(el, {
+        type: 'standard', theme: currentTheme() === 'light' ? 'outline' : 'filled_black',
+        size: 'large', text: 'continue_with', shape: 'pill', width: Math.min(320, el.clientWidth || 320),
+      });
+      const n = document.getElementById('gsiNote'); if (n) n.textContent = '';
+    });
+  }
+  async function onCredential(resp) {
+    const claims = decodeJwt(resp.credential);
+    if (!claims || claims.aud !== GOOGLE_CLIENT_ID || !claims.email) { setStatus(COPY.signInFail, true); return; }
+    const email = String(claims.email).toLowerCase();
+    const prev = session && session.email;
+    session = { token: resp.credential, email, name: claims.name || email, picture: claims.picture || '', exp: claims.exp };
+    ls.set('session', session);
+    if (prev !== email) {
+      // Another account on this device: never show or send the last one's data.
+      try { localStorage.removeItem('cache'); localStorage.removeItem('outbox'); } catch (e) { /* blocked */ }
+      outbox = []; base = empty(); state = empty();
+      loading = true;
+    }
+    paint();
+    await load();
+    rollNext = true;
+    paint();
+  }
+  function signOut() {
+    if (outbox.length) { setStatus(COPY.signOutWait, true); return; }
+    expireSession();
+    if (authOn() && window.google && google.accounts) google.accounts.id.disableAutoSelect();
+    try { localStorage.removeItem('cache'); } catch (e) { /* blocked */ }
+    base = empty(); state = empty(); loading = true;
+    setStatus(COPY.signOutDone);
+    paint();
+  }
+
   function paint() {
     const r = route();
     const changed = r !== lastRoute;
     lastRoute = r;
     const view = $('#view');
     if (!view) return;
+    if (authOn() && !signedIn()) {
+      view.innerHTML = signInView();
+      mountSignIn();
+      $$('.nav a[data-route]').forEach(a => a.removeAttribute('aria-current'));
+      return;
+    }
     const skel = loading && !ls.get('cache', null);
     const arrive = justArrived && !skel;
     if (arrive) justArrived = false;
@@ -1288,6 +1386,7 @@
     if (t.id === 'unitToggle') { unit = unit === 'kg' ? 'lbs' : 'kg'; ls.set('unit', unit); paint(); return; }
     if (t.id === 'themeToggle') { toggleTheme(); return; }
     if (t.id === 'cTest') { testConn(); return; }
+    if (t.id === 'signOut') { signOut(); return; }
     if (d.fav !== undefined) {
       ui.popFav = d.fav;
       run(() => { write({ action: 'toggleFav', name: d.fav }); });
@@ -1395,6 +1494,8 @@
 
   /* ---------- start ---------- */
   paint();
+  // A returning user with an expired token: let Google try a silent sign-in before showing the button.
+  if (authOn() && !signedIn() && session) whenGsi(() => google.accounts.id.prompt());
   load().then(() => {
     // First paint runs before data arrives, so the form starts empty. Prefill once data is in.
     const d = ui.draft;
