@@ -480,3 +480,11 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
   .kpi-grid, .grid, .two { gap: var(--s-5); }
   .kpi-grid { margin-bottom: var(--s-5); }
 }
+
+/* Phone: breathing room inside form fields (search, machine select, star) and between form rows. */
+@media (max-width: 479px) {
+  .field { display: flex; flex-direction: column; gap: var(--s-3); }
+  .field > label { margin-bottom: 0; }
+  .ex-row { gap: var(--s-4); margin-top: var(--s-1); }
+  form.stack { gap: var(--s-6); }
+}
