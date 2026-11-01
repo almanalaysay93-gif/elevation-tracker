@@ -98,6 +98,7 @@
     draft: {
       date: today(),
       exercise: ls.get('lastEx', ''),
+      group: '',
       reps: '',
       weight: '',
       entryUnit: ls.get('entryUnit', 'kg'),
@@ -411,10 +412,11 @@
   }
 
   /* ---------- shared markup ---------- */
-  function exOptions(sel) {
+  function exOptions(sel, only) {
     const block = (label, list) => list.length
       ? `<optgroup label="${esc(label)}">${list.map(e => `<option value="${esc(e.Name)}"${e.Name === sel ? ' selected' : ''}>${e.Favorite ? '★ ' : ''}${esc(e.Name)}</option>`).join('')}</optgroup>`
       : '';
+    if (only) return block(only, state.exercises.filter(e => e.Group === only));
     const other = state.exercises.filter(e => !GROUPS.includes(e.Group));
     return GROUPS.map(g => block(g, state.exercises.filter(e => e.Group === g))).join('') + block('Other', other);
   }
@@ -491,9 +493,13 @@
 
       <form id="setForm" class="card stack" novalidate>
         <div class="field">
+          <label for="fGroup">Split</label>
+          <select id="fGroup">${['', ...GROUPS].map(g => `<option value="${esc(g)}"${g === (d.group || '') ? ' selected' : ''}>${g ? esc(g) : 'All splits'}</option>`).join('')}</select>
+        </div>
+        <div class="field">
           <label for="fEx">Exercise / machine</label>
           <div class="ex-row">
-            <select id="fEx">${exOptions(d.exercise)}</select>
+            <select id="fEx">${exOptions(d.exercise, d.group)}</select>
             ${ex ? favButton(ex.Name, ex.Favorite, ui.popFav === ex.Name ? 'pop' : '') : ''}
           </div>
           ${ex ? exImg(ex.Name, 'ex-photo') : ''}
@@ -1126,6 +1132,15 @@
   document.addEventListener('change', e => {
     const id = e.target.id;
     if (id === 'fEx') { setExercise(e.target.value); paint(); }
+    else if (id === 'fGroup') {
+      ui.draft.group = e.target.value;
+      const inGroup = state.exercises.find(x => x.Name === ui.draft.exercise && (!ui.draft.group || x.Group === ui.draft.group));
+      if (!inGroup) {
+        const first = state.exercises.find(x => !ui.draft.group || x.Group === ui.draft.group);
+        if (first) setExercise(first.Name);
+      }
+      paint();
+    }
     else if (id === 'fDate') { ui.draft.date = e.target.value || today(); paint(); }
   });
 
