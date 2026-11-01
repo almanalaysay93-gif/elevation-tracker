@@ -495,3 +495,9 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
   .field .hint:empty { display: none; }
   .ex-row { gap: var(--s-3); margin-top: 0; }
 }
+
+/* Phone: bigger exercise photos (Log form + favourites cards). */
+@media (max-width: 479px) {
+  .ex-photo { height: 260px; padding: var(--s-3); }
+  .fav-photo { height: 180px; }
+}
