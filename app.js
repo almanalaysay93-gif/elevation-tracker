@@ -815,7 +815,7 @@
     try { await document.fonts.ready; } catch (e) { /* fonts optional */ }
     const c = $('#shareCanvas'), g = c.getContext('2d'), W = c.width, H = c.height;
     // Colours come from the active theme tokens, so the card matches the screen it was made on.
-    const bg = cssVar('--bg'), acc = cssVar('--accent'), cy = cssVar('--cyan'), tx = cssVar('--text'), mu = cssVar('--muted'), grid = cssVar('--surface-2');
+    const bg = cssVar('--bg'), acc = cssVar('--accent'), cy = cssVar('--signal'), tx = cssVar('--text'), mu = cssVar('--muted'), grid = cssVar('--surface-2');
     g.fillStyle = bg; g.fillRect(0, 0, W, H);
     g.strokeStyle = grid; g.lineWidth = 2;
     for (let yy = 0; yy < H; yy += 54) { g.beginPath(); g.moveTo(0, yy); g.lineTo(W, yy); g.stroke(); }
