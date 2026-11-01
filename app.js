@@ -112,11 +112,8 @@
 
   function demoSeed() {
     return {
-      exercises: [
-        ['Chest Press', 'Chest press machine', 'Upper'], ['Lat Pulldown', 'Cable pulldown', 'Upper'], ['Seated Row', 'Cable row', 'Upper'],
-        ['Leg Press', 'Leg press sled', 'Lower'], ['Leg Extension', 'Extension machine', 'Lower'], ['Leg Curl', 'Seated curl machine', 'Lower'],
-        ['Shoulder Press', 'Shoulder press machine', 'Arms & Shoulders'], ['Bicep Curl', 'Preacher curl machine', 'Arms & Shoulders'], ['Tricep Pushdown', 'Cable', 'Arms & Shoulders'],
-      ].map(([Name, Machine, Group]) => ({ Name, Machine, Group, Favorite: false })),
+      exercises: (window.EQUIPMENT || [])
+        .map(([Name, Machine, Group]) => ({ Name, Machine, Group, Favorite: false })),
       log: [],
       schedule: [['Monday', 'Upper'], ['Tuesday', 'Rest'], ['Wednesday', 'Lower'], ['Thursday', 'Rest'], ['Friday', 'Upper'], ['Saturday', 'Rest'], ['Sunday', 'Rest']]
         .map(([Day, Split]) => ({ Day, Split, Active: true })),
@@ -261,6 +258,7 @@
     const notify = !!(opts && opts.notify);
     if (isDemo()) {
       base = normalize(ls.get('demoState', null) || demoSeed());
+      (window.EQUIPMENT || []).forEach(([Name, Machine, Group]) => { if (!base.exercises.some(x => x.Name === Name)) base.exercises.push({ Name, Machine, Group, Favorite: false }); });
       state = base;
       ls.set('demoState', state);
       setSync('demo'); showBanner(true); setStatus('');
@@ -1174,6 +1172,8 @@
   });
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => { /* offline shell is optional */ });
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(r => r.update()).catch(() => { /* offline shell is optional */ });
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloaded && navigator.serviceWorker.controller) { reloaded = true; location.reload(); } });
   }
 })();

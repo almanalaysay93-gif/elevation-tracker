@@ -438,3 +438,65 @@ details summary::-webkit-details-marker { display: none; }
   .sync[data-state="pending"] { animation: none; }
   .bar i { animation: none; }
 }
+
+/* ==========================================================================
+   Cyberpunk layer: neon grid, scanlines, glow edges, HUD corners, glitch brand.
+   No purple. Volt + cyan + hot pink (#FF2E88). Decoration only; text contrast unchanged.
+   ========================================================================== */
+:root { --neon-pink: #FF2E88; --grid-line: rgb(0 229 255 / 0.07); }
+:root[data-theme="light"] { --grid-line: rgb(0 120 140 / 0.08); }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --grid-line: rgb(0 120 140 / 0.08); } }
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(80% 50% at 100% 0%, rgb(255 46 136 / 0.10), transparent 70%),
+    radial-gradient(70% 50% at 0% 100%, rgb(0 229 255 / 0.10), transparent 70%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: auto, auto, 32px 32px, 32px 32px;
+  background-attachment: fixed;
+}
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100;
+  background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.12) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+:root[data-theme="light"] body::after { opacity: .35; }
+
+.top { border-bottom: 1px solid var(--signal); box-shadow: 0 1px 0 rgb(0 229 255 / .25), 0 6px 24px -10px rgb(0 229 255 / .5); backdrop-filter: blur(8px); }
+.brand { font-family: var(--font-display); letter-spacing: .18em; position: relative; text-shadow: 0 0 8px rgb(198 255 0 / .55); }
+.brand-mark { text-shadow: 0 0 10px var(--accent); }
+.brand:hover, .brand:focus-visible { animation: glitch .35s steps(2) 2; }
+@keyframes glitch {
+  0% { text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--signal); transform: translateX(0); }
+  50% { text-shadow: -2px 0 var(--neon-pink), 2px 0 var(--signal); transform: translateX(1px); }
+  100% { text-shadow: 0 0 8px rgb(198 255 0 / .55); transform: none; }
+}
+
+h2 { color: var(--text); text-shadow: 0 0 12px rgb(0 229 255 / .45); }
+h2::before { content: "// "; color: var(--neon-pink); }
+
+.card {
+  position: relative;
+  border: 1px solid rgb(0 229 255 / .35);
+  box-shadow: inset 0 0 0 1px rgb(0 229 255 / .06), 0 0 18px -8px rgb(0 229 255 / .55);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+.card::before, .card::after { content: ""; position: absolute; width: 14px; height: 14px; pointer-events: none; }
+.card::before { top: 0; left: 0; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+.card::after { bottom: 0; right: 0; border-bottom: 2px solid var(--neon-pink); border-right: 2px solid var(--neon-pink); }
+
+.btn.primary { box-shadow: 0 0 0 1px var(--accent), 0 0 22px -4px rgb(198 255 0 / .7); text-shadow: none; }
+.btn.primary:hover { filter: brightness(1.08); box-shadow: 0 0 0 1px var(--accent), 0 0 32px -2px rgb(198 255 0 / .85); }
+.btn:not(.primary):hover { border-color: var(--signal); box-shadow: 0 0 14px -4px rgb(0 229 255 / .7); }
+
+.nav { border-top: 1px solid var(--neon-pink); box-shadow: 0 -6px 24px -10px rgb(255 46 136 / .55); }
+.nav a[aria-current="page"], .nav a.active { color: var(--accent); text-shadow: 0 0 10px rgb(198 255 0 / .7); }
+.nav a[aria-current="page"] .i, .nav a.active .i { filter: drop-shadow(0 0 6px var(--accent)); }
+
+input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 2px var(--signal), 0 0 16px -2px rgb(0 229 255 / .6); }
+
+@media (prefers-reduced-motion: reduce) { .brand:hover, .brand:focus-visible { animation: none; } }
+.card { border-color: rgb(0 229 255 / .6); filter: drop-shadow(0 0 6px rgb(0 229 255 / .35)); }
+h1, .view > h2:first-child { text-shadow: 0 0 14px rgb(198 255 0 / .45), 2px 0 0 rgb(255 46 136 / .5); }
