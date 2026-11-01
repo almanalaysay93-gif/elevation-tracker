@@ -695,3 +695,17 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   .rn-s { transition: none; }
 }
+
+/* Delete set: trash icon, logo loader while the server confirms */
+.del { display: inline-grid; place-items: center; }
+.del svg { width: 20px; height: 20px; }
+.del.is-busy { color: var(--danger); border-color: var(--danger); cursor: progress; }
+.del-logo { display: inline-block; font-size: 16px; line-height: 1; animation: del-logo 0.9s cubic-bezier(.6,0,.4,1) infinite; }
+.sets li.is-deleting > div { opacity: .45; transition: opacity .2s; }
+@keyframes del-logo {
+  0% { transform: rotate(0) scale(1); opacity: 1; }
+  50% { transform: rotate(180deg) scale(.7); opacity: .55; }
+  100% { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .del-logo { animation: del-pulse 1.2s ease-in-out infinite; } }
+@keyframes del-pulse { 50% { opacity: .35; } }

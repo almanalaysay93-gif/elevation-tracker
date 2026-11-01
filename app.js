@@ -689,7 +689,9 @@
           ? `<ul class="sets">${todays.map(r => `<li>
               <div><strong>${esc(r.Exercise)}</strong> <span class="mono muted">#${r.Set}</span><br>
               <span class="mono">${r.Reps} × ${esc(both(r))}</span><span class="tag ${esc(r.Intensity)}">${esc(r.Intensity)}</span></div>
-              <button type="button" class="del" data-del="${esc(r.ID)}" aria-label="Delete set ${r.Set} of ${esc(r.Exercise)}">${icon('i-remove')}</button>
+              ${deleting.has(r.ID)
+                ? `<span class="del is-busy" role="status" aria-label="Deleting set ${r.Set} of ${esc(r.Exercise)}"><span class="del-logo" aria-hidden="true">▲</span></span>`
+                : `<button type="button" class="del" data-del="${esc(r.ID)}" aria-label="Delete set ${r.Set} of ${esc(r.Exercise)}" title="Delete set">${icon('i-delete')}</button>`}
             </li>`).join('')}</ul>`
           : `<p class="empty">No sets yet. Log your first one above.</p>`}
       </section>`;
@@ -1147,10 +1149,21 @@
     }, () => { const r = $('#fReps'); if (r) r.focus({ preventScroll: true }); });
   }
 
+  const deleting = new Set();
   function removeSet(id) {
     const row = state.log.find(r => r.ID === id);
-    if (!row) return;
+    if (!row || deleting.has(id)) return;
+    deleting.add(id);
+    const li = document.querySelector(`[data-del="${CSS.escape(id)}"]`)?.closest('li');
+    if (li) li.classList.add('is-deleting');
+    const btn = li && li.querySelector('.del');
+    if (btn) btn.outerHTML = `<span class="del is-busy" role="status" aria-label="Deleting set"><span class="del-logo" aria-hidden="true">▲</span></span>`;
     run(async () => {
+      try { await deleteNow(id, row); } finally { deleting.delete(id); }
+    });
+  }
+  async function deleteNow(id, row) {
+    {
       const p = write({ action: 'deleteSet', id });
       showToast(COPY.deleted, () => {
         run(async () => {
@@ -1159,7 +1172,7 @@
         });
       });
       await p;
-    });
+    }
   }
 
   function addExercise() {
