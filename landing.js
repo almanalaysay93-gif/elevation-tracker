@@ -441,27 +441,16 @@ export function mountStage(root) {
         const r = card.getBoundingClientRect();
         const cx = (e.clientX - r.left) / r.width, cy = (e.clientY - r.top) / r.height;
         const near = cx > -0.4 && cx < 1.4 && cy > -0.4 && cy < 1.4;
-        card.classList.toggle('is-tracking', near);
-        card.style.setProperty('--ry', near ? ((cx - 0.5) * 14).toFixed(2) + 'deg' : '0deg');
-        card.style.setProperty('--rx', near ? ((0.5 - cy) * 12).toFixed(2) + 'deg' : '0deg');
+        // No tilt: Google ignores clicks on its button when an ancestor is transformed. Sheen only.
         card.style.setProperty('--gx', (cx * 100).toFixed(1) + '%');
         card.style.setProperty('--gy', (cy * 100).toFixed(1) + '%');
       }
-      if (gwrap) {
-        const r = gwrap.getBoundingClientRect();
-        const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
-        const inRange = Math.abs(dx) < r.width / 2 + 60 && Math.abs(dy) < r.height / 2 + 50;
-        gwrap.style.transform = inRange ? `translate(${(dx * 0.12).toFixed(1)}px, ${(dy * 0.22).toFixed(1)}px)` : '';
-        const inner = gwrap.querySelector('.st-gslot > div');
-        if (inner) inner.style.transform = inRange ? `translate(${(dx * 0.06).toFixed(1)}px, ${(dy * 0.1).toFixed(1)}px)` : '';
-      }
     });
-    on(stage, 'pointerleave', () => { tx = 0; ty = 0; if (card) { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); } if (gwrap) gwrap.style.transform = ''; });
+    on(stage, 'pointerleave', () => { tx = 0; ty = 0;  });
     on(window, 'deviceorientation', e => {
       if (e.gamma == null) return;
       if (e.gamma == null) return; lastIn = performance.now() + 1e9;
       tx = Math.max(-1, Math.min(1, e.gamma / 25)); ty = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
-      if (card && cur === N - 1) { card.style.setProperty('--ry', (tx * 8).toFixed(2) + 'deg'); card.style.setProperty('--rx', (-ty * 6).toFixed(2) + 'deg'); }
     });
     const tick = () => {
       praf = requestAnimationFrame(tick);
