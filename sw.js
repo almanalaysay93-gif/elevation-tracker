@@ -2,12 +2,15 @@
    Navigations: network first. The app's own pages are cached under their request URL.
    /intro/ is never cached or intercepted, so it cannot overwrite the app shell.
    Same-origin static files: cache first. Cross-origin (Apps Script, fonts) is never cached. */
-const VERSION = 'elevation-v3-15';
+const VERSION = 'elevation-v3-26';
 const SHELL = VERSION + '-shell';
 const PRECACHE = [
   './',
   './index.html',
   './styles.css',
+  './gym-background.js',
+  './assets/gym-background.webp',
+  './assets/three.module.js',
   './tokens.css',
   './app.js',
   './equipment.js',

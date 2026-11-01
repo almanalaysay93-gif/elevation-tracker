@@ -6,6 +6,39 @@
 
   const LB = 2.20462;
   const GROUPS = ['Upper', 'Lower', 'Arms & Shoulders'];
+  // Muscle sub-categories per split. Derived from the machine name, so the sheet needs no new column.
+  const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const SPLITS = ['Upper', 'Lower', 'Arms & Shoulders', 'Rest'];
+  const MUSCLES = {
+    'Upper': ['Chest', 'Back', 'Core', 'Other'],
+    'Lower': ['Quads', 'Hamstrings', 'Glutes', 'Calves', 'Other'],
+    'Arms & Shoulders': ['Shoulders', 'Biceps', 'Triceps', 'Biceps & Triceps', 'Other'],
+  };
+  function muscleOf(name, group) {
+    const n = String(name).toLowerCase();
+    const has = re => re.test(n);
+    if (group === 'Lower') {
+      if (has(/calf/)) return 'Calves';
+      if (has(/hip thrust|glute|abduct|adduct|kick/)) return 'Glutes';
+      if (has(/leg curl|prone leg|kneeling|hamstring/)) return 'Hamstrings';
+      if (has(/leg|squat|lunge|hack|pendulum/)) return 'Quads';
+      return 'Other';
+    }
+    if (group === 'Arms & Shoulders') {
+      if (has(/curl/) && has(/tricep/)) return 'Biceps & Triceps';
+      if (has(/tricep|dip/)) return 'Triceps';
+      if (has(/bicep|curl/)) return 'Biceps';
+      if (has(/shoulder|lateral|raise/)) return 'Shoulders';
+      return 'Other';
+    }
+    if (group === 'Upper') {
+      if (has(/torso|rotat|abdom|core|stretch/)) return 'Core';
+      if (has(/row|pulldown|pull|back ext|t bar/)) return 'Back';
+      if (has(/chest|pec|fly|flight|bench|press|dip|incline|decline|push sled|crossover/)) return 'Chest';
+      return 'Other';
+    }
+    return 'Other';
+  }
   const DAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   /* Strings from copy/COPY.md. Keep in step with that file. */
@@ -37,7 +70,7 @@
     lastNone: 'No sets yet on this machine',
     badgeUp: 'UP',
     badgeLow: 'LOW',
-    chartEmpty: 'Log this machine to see a chart.',
+    chartEmpty: 'Log a set in this split to see its weekly progress.',
     chartNone: 'No machines yet. Add one on Log.',
     favIntro: 'Tap ★ on any machine to pin it here. Tap a card to log it.',
     favEmpty: 'No favorites yet. Tap ★ on any machine.',
@@ -54,7 +87,7 @@
     calEmptyPlan: (s) => `${s} day. Nothing logged yet.`,
     calEmptyRest: 'Rest day.',
     setPlanEmpty: 'No schedule found. Add rows to the Schedule tab.',
-    setPlanNote: 'Change your split in the Schedule tab of your Sheet. Reminders read it daily.',
+    setPlanNote: 'Pick a split for each day. Reminders read the same plan from your Sheet.',
     shareCardDay: (s) => (s ? `${s} DAY` : 'WORKOUT'),
   };
 
@@ -90,7 +123,7 @@
   const ui = {
     calMonth: null,
     calDay: today(),
-    progEx: '',
+    progGroup: '',
     progRange: '12W',
     favQ: '',
     openNew: false,
@@ -99,6 +132,7 @@
       date: today(),
       exercise: ls.get('lastEx', ''),
       group: '',
+      muscle: '',
       q: '',
       reps: '',
       weight: '',
@@ -145,7 +179,11 @@
 
   /* Pure change to a state object. Used by the demo store and by the outbox replay. */
   function applyLocal(s, p) {
-    if (p.action === 'addSet') {
+    if (p.action === 'setSplit') {
+      const d = s.schedule.find(x => x.Day === p.day);
+      if (d) { d.Split = p.split; d.Active = p.split !== 'Rest'; }
+      else s.schedule.push({ Day: p.day, Split: p.split, Active: p.split !== 'Rest' });
+    } else if (p.action === 'addSet') {
       const e = s.exercises.find(x => x.Name === p.exercise);
       if (!e) throw new Error(COPY.errNoEx);
       const w = Number(p.weight), reps = Number(p.reps);
@@ -416,15 +454,16 @@
 
   /* ---------- shared markup ---------- */
   // Machines matching the typed search (name or machine model) within the chosen split.
-  function exMatches(q, only) {
+  function exMatches(q, only, muscle) {
     const needle = (q || '').trim().toLowerCase();
     return state.exercises.filter(e =>
       (!only || e.Group === only) &&
+      (!muscle || muscleOf(e.Name, e.Group) === muscle) &&
       (!needle || (e.Name + ' ' + (e.Machine || '')).toLowerCase().includes(needle)));
   }
 
-  function exOptions(sel, only, q) {
-    const pool = exMatches(q, only);
+  function exOptions(sel, only, q, muscle) {
+    const pool = exMatches(q, only, muscle);
     const block = (label, list) => list.length
       ? `<optgroup label="${esc(label)}">${list.map(e => `<option value="${esc(e.Name)}"${e.Name === sel ? ' selected' : ''}>${e.Favorite ? '★ ' : ''}${esc(e.Name)}</option>`).join('')}</optgroup>`
       : '';
@@ -436,7 +475,7 @@
   function searchHint(d) {
     const q = (d.q || '').trim();
     if (!q) return '';
-    const n = exMatches(q, d.group).length;
+    const n = exMatches(q, d.group, d.muscle).length;
     return n ? `${n} match${n === 1 ? '' : 'es'}` : `No machine matches “${esc(q)}”`;
   }
 
@@ -452,26 +491,46 @@
     return `<svg viewBox="0 0 ${w} ${h}" class="spark" preserveAspectRatio="none" aria-hidden="true"><polyline class="line" points="${pts}"/></svg>`;
   }
 
-  function chart(sessions) {
-    if (!sessions.length) return `<p class="empty">${COPY.chartEmpty}</p>`;
+  /* Per-split weekly series: volume and average of each exercise's best e1RM that week. */
+  function splitWeeks(group) {
+    const W = {};
+    state.log.filter(r => r.Group === group).forEach(r => {
+      const k = weekStart(r.Date);
+      const w = W[k] = W[k] || { week: k, vol: 0, sets: 0, best: {} };
+      w.vol += r.Volume; w.sets++;
+      w.best[r.Exercise] = Math.max(w.best[r.Exercise] || 0, r.E1RM);
+    });
+    return Object.keys(W).sort().map(k => {
+      const w = W[k], vals = Object.values(w.best);
+      return { week: k, vol: w.vol, sets: w.sets, e1: vals.reduce((a, b) => a + b, 0) / vals.length };
+    });
+  }
+
+  function weekChart(weeks) {
+    if (!weeks.length) return `<p class="empty">${COPY.chartEmpty}</p>`;
     const desktop = matchMedia('(min-width: 1024px)').matches;
     const W = Math.round(Math.min(900, Math.max(280, (($('#view') || {}).clientWidth || 358) - 40)));
-    const H = desktop ? 420 : 260, P = 36;
+    const H = desktop ? 420 : 260, P = 36, n = weeks.length;
     const conv = v => unit === 'kg' ? v : v * LB;
-    const a = sessions.map(s => conv(s.e1rm)), b = sessions.map(s => conv(s.top));
-    const all = a.concat(b);
-    const min = Math.min(...all) * 0.95, max = (Math.max(...all) * 1.05) || 1;
-    const x = i => P + (sessions.length === 1 ? (W - 2 * P) / 2 : i / (sessions.length - 1) * (W - 2 * P));
+    const e = weeks.map(w => conv(w.e1)), vol = weeks.map(w => conv(w.vol));
+    const min = Math.min(...e) * 0.95, max = (Math.max(...e) * 1.05) || 1, vmax = Math.max(...vol) || 1;
+    const x = i => P + (n === 1 ? (W - 2 * P) / 2 : i / (n - 1) * (W - 2 * P));
     const y = v => H - P - (v - min) / ((max - min) || 1) * (H - 2 * P);
-    const line = arr => arr.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    const bw = Math.max(10, Math.min(40, (W - 2 * P) / n * 0.5));
     const ticks = [0, 0.5, 1].map(t => min + t * (max - min));
-    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Estimated 1 rep max and top set over ${sessions.length} sessions">
+    const bars = weeks.map((w, i) => {
+      const h = vol[i] / vmax * (H - 2 * P);
+      return `<rect class="vol-bar" x="${(x(i) - bw / 2).toFixed(1)}" y="${(H - P - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3"><title>Week of ${esc(weekLabel(w.week))}: ${r1(vol[i])} ${unit} volume, ${w.sets} sets</title></rect>`;
+    }).join('');
+    const pts = e.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    const dots = e.map((v, i) => `<circle class="dot" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4"><title>Week of ${esc(weekLabel(weeks[i].week))}: avg best e1RM ${r1(v)} ${unit}</title></circle>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Weekly volume bars and average best e1RM line over ${n} weeks">
       ${ticks.map(t => `<line class="grid-l" x1="${P}" x2="${W - P}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}"/><text x="2" y="${(y(t) + 4).toFixed(1)}">${Math.round(t)}</text>`).join('')}
-      <polyline class="line" points="${line(a)}"/><polyline class="line2" points="${line(b)}"/>
-      ${a.map((v, i) => `<circle class="dot" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4"><title>${sessions[i].date}: e1RM ${r1(v)} ${unit}</title></circle>`).join('')}
-      <text x="${P}" y="${H - 8}">${sessions[0].date}</text><text x="${W - P}" y="${H - 8}" text-anchor="end">${sessions[sessions.length - 1].date}</text>
+      ${bars}
+      <polyline class="line" points="${pts}"/>${dots}
+      <text x="${P}" y="${H - 8}">${esc(weekLabel(weeks[0].week))}</text><text x="${W - P}" y="${H - 8}" text-anchor="end">${esc(weekLabel(weeks[n - 1].week))}</text>
     </svg>
-    <div class="legend"><span><i class="sw sw-a"></i>Est. 1RM (${unit})</span><span><i class="sw sw-s"></i>Top set (${unit})</span></div>`;
+    <div class="legend"><span><i class="sw sw-v"></i>Weekly volume (${unit})</span><span><i class="sw sw-a"></i>Avg best e1RM (${unit})</span></div>`;
   }
 
   function dayPanel(date) {
@@ -515,13 +574,17 @@
           <label for="fGroup">Split</label>
           <select id="fGroup">${['', ...GROUPS].map(g => `<option value="${esc(g)}"${g === (d.group || '') ? ' selected' : ''}>${g ? esc(g) : 'All splits'}</option>`).join('')}</select>
         </div>
+        ${d.group ? `<div class="field">
+          <label for="fMuscle">Muscle</label>
+          <select id="fMuscle">${['', ...MUSCLES[d.group]].map(m => `<option value="${esc(m)}"${m === (d.muscle || '') ? ' selected' : ''}>${m ? esc(m) : 'All ' + esc(d.group) + ' muscles'}</option>`).join('')}</select>
+        </div>` : ''}
         <div class="field">
           <label for="fEx">Exercise / machine</label>
           <input id="fSearch" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false"
             placeholder="Type a machine name to find it" aria-describedby="fMatch" value="${esc(d.q || '')}">
           <p class="hint" id="fMatch" aria-live="polite">${searchHint(d)}</p>
           <div class="ex-row">
-            <select id="fEx">${exOptions(d.exercise, d.group, d.q)}</select>
+            <select id="fEx">${exOptions(d.exercise, d.group, d.q, d.muscle)}</select>
             ${ex ? favButton(ex.Name, ex.Favorite, ui.popFav === ex.Name ? 'pop' : '') : ''}
           </div>
           ${ex ? exImg(ex.Name, 'ex-photo') : ''}
@@ -642,34 +705,36 @@
 
   views.progress = () => {
     if (!state.exercises.length) return `<h1>Charts</h1><p class="empty">${COPY.chartNone}</p>`;
-    const logged = [...new Set(state.log.map(r => r.Exercise))];
-    if (!ui.progEx || !state.exercises.some(e => e.Name === ui.progEx)) ui.progEx = logged[0] || state.exercises[0].Name;
-    const s = exStats(ui.progEx);
+    const loggedGroups = new Set(state.log.map(r => r.Group));
+    if (!GROUPS.includes(ui.progGroup)) ui.progGroup = GROUPS.find(g => loggedGroups.has(g)) || GROUPS[0];
+    const all = splitWeeks(ui.progGroup);
     const days = ui.progRange === '4W' ? 28 : ui.progRange === '12W' ? 84 : null;
-    const cutoff = days ? iso(addDays(new Date(), -days)) : null;
-    const sessions = cutoff ? s.sessions.filter(x => x.date >= cutoff) : s.sessions;
-    const first = s.sessions[0], last = s.sessions[s.sessions.length - 1];
-    const gain = first && last && s.sessions.length > 1 ? pct(last.e1rm, first.e1rm) : null;
-    const hist = s.rows.slice().reverse().slice(0, 30);
+    const cutoff = days ? weekStart(iso(addDays(new Date(), -days))) : null;
+    const weeks = cutoff ? all.filter(w => w.week >= cutoff) : all;
+    const cur = all[all.length - 1] || null, prev = all.length > 1 ? all[all.length - 2] : null;
+    const volD = cur && prev ? pct(cur.vol, prev.vol) : null;
+    const e1D = cur && prev ? pct(cur.e1, prev.e1) : null;
+    const wv = cur ? verdict(e1D) : null;
     const ranges = ['4W', '12W', 'ALL'];
+    const hist = all.slice().reverse().slice(0, 12);
     return `
       <h1>Charts</h1>
-      <div class="scroller" role="group" aria-label="Exercise / machine">
-        ${state.exercises.map(e => `<button type="button" class="chip" data-chart-ex="${esc(e.Name)}" aria-pressed="${e.Name === ui.progEx}">${esc(e.Name)}</button>`).join('')}
+      <div class="scroller" role="group" aria-label="Split">
+        ${GROUPS.map(g => `<button type="button" class="chip" data-chart-group="${esc(g)}" aria-pressed="${g === ui.progGroup}">${esc(g)}</button>`).join('')}
       </div>
       <div class="seg range" role="radiogroup" aria-label="Date range">
         ${ranges.map(r => `<button type="button" role="radio" aria-checked="${ui.progRange === r}" data-range="${r}">${r}</button>`).join('')}
       </div>
       <div class="kpi-grid">
-        <div class="card"><span class="kicker">Best e1RM</span><div class="stat">${s.best ? fmtW(s.best.E1RM) : '—'}</div></div>
-        <div class="card"><span class="kicker">Heaviest set</span><div class="stat">${s.heavy ? fmtW(s.heavy.KG) : '—'}<small>${s.heavy ? `× ${s.heavy.Reps} on ${s.heavy.Date}` : ''}</small></div></div>
-        <div class="card"><span class="kicker">Sessions</span><div class="stat">${s.sessions.length}</div></div>
-        <div class="card"><span class="kicker">Since first session</span><div class="stat ${cls(gain)}">${fmtPct(gain)}</div></div>
+        <div class="card"><span class="kicker">This week volume</span><div class="stat">${cur ? fmtW(cur.vol) : '—'}<small class="${cls(volD)}">${fmtPct(volD)} vs last week</small></div></div>
+        <div class="card"><span class="kicker">Avg best e1RM</span><div class="stat">${cur ? fmtW(cur.e1) : '—'}<small class="${cls(e1D)}">${fmtPct(e1D)} vs last week</small></div></div>
+        <div class="card"><span class="kicker">Week verdict</span><div class="stat">${wv ? `<span class="verdict ${wv}">${wv}</span>` : '—'}</div></div>
+        <div class="card"><span class="kicker">Weeks trained</span><div class="stat">${all.length}</div></div>
       </div>
-      <div class="card">${chart(sessions)}</div>
-      ${hist.length ? `<section class="card"><h2>History</h2><ul class="sets">${hist.map(r => `<li>
-        <span class="mono nowrap">${r.Date} #${r.Set}</span>
-        <span class="mono">${r.Reps} × ${esc(both(r))}</span><span class="tag ${esc(r.Intensity)}">${esc(r.Intensity)}</span></li>`).join('')}</ul></section>` : ''}`;
+      <div class="card">${weekChart(weeks)}</div>
+      ${hist.length ? `<section class="card"><h2>Weeks</h2><ul class="sets">${hist.map(w => `<li>
+        <span class="mono nowrap">Week of ${esc(weekLabel(w.week))}</span>
+        <span class="mono">${fmtW(w.vol)} · ${w.sets} sets</span></li>`).join('')}</ul></section>` : ''}`;
   };
 
   views.calendar = () => {
@@ -759,20 +824,6 @@
     const url = apiUrl();
     const dark = currentTheme() === 'dark';
     return `
-      <h1>Setup</h1>
-      <form class="card stack" id="cfgForm">
-        <div class="field">
-          <label for="cUrl">Apps Script web app URL</label>
-          <input id="cUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(url)}">
-        </div>
-        <p class="hint">Leave empty for demo mode. Data stays in this browser.</p>
-        <p class="hint">Setup steps are in the README on GitHub.</p>
-        <div class="row">
-          <button class="btn primary" type="submit">Save &amp; sync</button>
-          <button class="btn ghost" type="button" id="cTest">Test connection</button>
-        </div>
-      </form>
-
       <section class="card stack">
         <div class="field">
           <span class="label" id="unitLbl">Display unit</span>
@@ -792,9 +843,12 @@
 
       <section class="card">
         <h2>Plan</h2>
-        ${state.schedule.length
-          ? `<ul class="sets plan-list">${state.schedule.map(d => `<li><span>${esc(d.Day)}</span><span class="mono">${esc(d.Split)}</span></li>`).join('')}</ul>`
-          : `<p class="empty">${COPY.setPlanEmpty}</p>`}
+        <ul class="sets plan-list">${DAYS.map(day => {
+          const d = state.schedule.find(x => x.Day === day);
+          const cur = (d && d.Split) || 'Rest';
+          const opts = SPLITS.includes(cur) ? SPLITS : [cur, ...SPLITS];
+          return `<li><span>${day}</span><select class="plan-sel" data-plan-day="${day}" aria-label="${day} split">${opts.map(s => `<option value="${esc(s)}"${s === cur ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select></li>`;
+        }).join('')}</ul>
         <p class="hint mt">${COPY.setPlanNote}</p>
       </section>
 
@@ -813,7 +867,7 @@
     g.strokeStyle = grid; g.lineWidth = 2;
     for (let yy = 0; yy < H; yy += 54) { g.beginPath(); g.moveTo(0, yy); g.lineTo(W, yy); g.stroke(); }
     g.fillStyle = acc; g.beginPath(); g.moveTo(W - 220, 0); g.lineTo(W, 0); g.lineTo(W, 220); g.closePath(); g.fill();
-    g.fillStyle = acc; g.font = '700 40px "Chakra Petch", sans-serif'; g.fillText('▲ ELEVATION', 72, 110);
+    g.fillStyle = acc; g.font = '700 40px "Chakra Petch", sans-serif'; g.fillText('▲ ELEV TRACKER', 72, 110);
     g.fillStyle = tx; g.font = '700 92px "Chakra Petch", sans-serif'; g.fillText(title.toUpperCase().slice(0, 16), 72, 240);
     g.fillStyle = cy; g.font = '500 38px "JetBrains Mono", monospace'; g.fillText(sub, 72, 300);
     stats.forEach(([k, v], i) => {
@@ -827,7 +881,7 @@
       g.fillStyle = i % 2 ? mu : tx;
       g.fillText(l.length > 44 ? l.slice(0, 43) + '…' : l, 72, 600 + i * 58);
     });
-    g.fillStyle = mu; g.font = '500 28px "JetBrains Mono", monospace'; g.fillText('Tracked with Elevation', 72, H - 60);
+    g.fillStyle = mu; g.font = '500 28px "JetBrains Mono", monospace'; g.fillText('Tracked with Elev tracker', 72, H - 60);
     return new Promise(res => c.toBlob(res, 'image/png'));
   }
 
@@ -1034,7 +1088,8 @@
   }
 
   function saveSetup() {
-    ls.set('apiUrl', $('#cUrl').value.trim());
+    const typed = $('#cUrl').value.trim();
+    if (typed) ls.set('apiUrl', typed); // empty input keeps the current connection; URL is never shown back
     run(() => load({ notify: true }));
   }
 
@@ -1137,7 +1192,7 @@
     else if (d.logday) { ui.draft.date = d.logday; location.hash = '#log'; }
     else if (d.shareDay) shareDay(d.shareDay);
     else if (d.shareWeek !== undefined) shareWeek(Number(d.shareWeek));
-    else if (d.chartEx !== undefined) { ui.progEx = d.chartEx; paint(); }
+    else if (d.chartGroup !== undefined) { ui.progGroup = d.chartGroup; paint(); }
     else if (d.range) { ui.progRange = d.range; paint(); }
     else if (d.themeSet) setTheme(d.themeSet);
     else if (d.unitSet) { unit = d.unitSet; ls.set('unit', unit); paint(); }
@@ -1145,9 +1200,17 @@
 
   document.addEventListener('change', e => {
     const id = e.target.id;
-    if (id === 'fEx') { setExercise(e.target.value); paint(); }
+    if (e.target.dataset.planDay) { run(() => write({ action: 'setSplit', day: e.target.dataset.planDay, split: e.target.value })); }
+    else if (id === 'fEx') { setExercise(e.target.value); paint(); }
+    else if (id === 'fMuscle') {
+      ui.draft.muscle = e.target.value;
+      const list = exMatches(ui.draft.q, ui.draft.group, ui.draft.muscle);
+      if (!list.some(x => x.Name === ui.draft.exercise) && list[0]) setExercise(list[0].Name);
+      paint();
+    }
     else if (id === 'fGroup') {
       ui.draft.group = e.target.value;
+      ui.draft.muscle = '';
       ui.draft.q = '';
       const inGroup = state.exercises.find(x => x.Name === ui.draft.exercise && (!ui.draft.group || x.Group === ui.draft.group));
       if (!inGroup) {
@@ -1176,7 +1239,7 @@
   function applySearch(q, pickFirst) {
     const d = ui.draft;
     d.q = q;
-    const list = exMatches(q, d.group);
+    const list = exMatches(q, d.group, d.muscle);
     if (!list.length) { $('#fMatch').textContent = searchHint(d); return; }
     if (pickFirst || !list.some(x => x.Name === d.exercise)) {
       setExercise(list[0].Name);
@@ -1185,7 +1248,7 @@
       if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
       return;
     }
-    $('#fEx').innerHTML = exOptions(d.exercise, d.group, q);
+    $('#fEx').innerHTML = exOptions(d.exercise, d.group, q, d.muscle);
     $('#fMatch').textContent = searchHint(d);
   }
 
@@ -1201,7 +1264,7 @@
     if (!shareBlob) return;
     const file = new File([shareBlob], shareName, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: shareTitle, text: COPY.shareText || 'Logged with Elevation' }); }
+      try { await navigator.share({ files: [file], title: shareTitle, text: COPY.shareText || 'Logged with Elev tracker' }); }
       catch (e) { /* user cancelled */ }
     } else {
       downloadShare();

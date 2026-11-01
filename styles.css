@@ -16,6 +16,26 @@ body {
   padding-bottom: calc(var(--tabbar-total) + var(--s-5));
   overflow-x: hidden;
 }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(rgb(9 10 11 / 0.62), rgb(9 10 11 / 0.78)), url("assets/gym-background.webp") center / cover no-repeat;
+  pointer-events: none;
+}
+.gym-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.gym-scene canvas { display: block; width: 100%; height: 100%; }
+main, .banner { position: relative; z-index: 1; }
+:root[data-theme="light"] body::before { opacity: 0.10; }
+:root[data-theme="light"] .gym-scene { opacity: 0.08; }
+@media (prefers-reduced-motion: reduce) { .gym-scene { display: none; } }
 h1, h2, h3 { margin: 0; font-family: var(--font-display); font-weight: 600; line-height: var(--lh-snug); }
 h1 { font-size: var(--fs-2xl); text-transform: uppercase; letter-spacing: var(--ls-display); margin: var(--s-4) 0 var(--s-3); }
 h2 { font-size: var(--fs-lg); text-transform: uppercase; letter-spacing: var(--ls-button); color: var(--text); }
@@ -186,7 +206,7 @@ select option, select optgroup { background: var(--surface); color: var(--text);
 
 /* ---------- Log ---------- */
 .meta-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); flex-wrap: wrap; margin-bottom: var(--s-4); }
-.ex-row { display: grid; grid-template-columns: 1fr var(--touch-min); gap: var(--s-3); align-items: center; }
+.ex-row { display: grid; grid-template-columns: 1fr var(--touch-min); gap: var(--s-5); align-items: center; margin: var(--s-4) 0 var(--s-2); }
 .star { width: var(--touch-min); height: var(--touch-min); padding: 0; background: var(--surface-2); border: 1px solid var(--control); border-radius: var(--r-md); color: var(--muted); display: inline-flex; align-items: center; justify-content: center; box-shadow: var(--elev-control); }
 .star[aria-pressed="true"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); box-shadow: var(--elev-btn); }
 .star.pop .i { animation: pop var(--dur-slow) var(--ease-snap); }
@@ -295,6 +315,8 @@ select option, select optgroup { background: var(--surface); color: var(--text);
 .chart .grid-l { stroke: var(--line); stroke-width: 1; }
 .chart .line { fill: none; stroke: var(--accent-text); stroke-width: 3; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .chart .line2 { fill: none; stroke: var(--signal); stroke-width: 2; stroke-dasharray: 6 4; vector-effect: non-scaling-stroke; }
+.chart .vol-bar { fill: var(--accent); opacity: 0.35; }
+.sw-v { background: var(--accent); opacity: 0.35; }
 .legend { display: flex; gap: var(--s-4); flex-wrap: wrap; font-size: var(--fs-sm); color: var(--muted); margin-top: var(--s-3); }
 .legend i { display: inline-block; width: 12px; height: 4px; margin-right: var(--s-1); vertical-align: middle; border-radius: 2px; }
 .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); margin-bottom: var(--s-4); }
@@ -367,7 +389,8 @@ details summary { list-style: none; }
 details summary::-webkit-details-marker { display: none; }
 
 /* ---------- Setup ---------- */
-.plan-list li { display: flex; justify-content: space-between; padding: var(--s-3) 0; border-bottom: 1px solid var(--line); }
+.plan-list li { display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); padding: var(--s-3) 0; border-bottom: 1px solid var(--line); }
+.plan-sel { width: 12rem; min-height: var(--touch-min); flex: none; }
 .setup-links { display: flex; gap: var(--s-4); flex-wrap: wrap; margin-top: var(--s-3); }
 .setup-links a { min-height: var(--touch-min); display: inline-flex; align-items: center; color: var(--text); font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: var(--ls-button); }
 
@@ -468,7 +491,7 @@ details summary::-webkit-details-marker { display: none; }
    Clay details: photo tiles, nav marker, selects. Decoration is shadow only, never a clip-path.
    ========================================================================== */
 /* Machine photos (hotlinked from the user's sheet). White studio shots sit in a clay well. */
-.ex-photo { display: block; width: 100%; height: 160px; object-fit: contain; margin-top: var(--s-2); background: #FFFFFF; border: 0; box-shadow: var(--elev-pressed); border-radius: var(--r-sm); padding: var(--s-2); }
+.ex-photo { display: block; width: 100%; max-width: 380px; aspect-ratio: 3 / 4; height: auto; margin: var(--s-2) auto 0; object-fit: contain; background: #FFFFFF; border: 0; box-shadow: var(--elev-pressed); border-radius: var(--r-sm); padding: var(--s-2); }
 .fav-card .fav-photo { width: 100%; height: 110px; object-fit: contain; background: #FFFFFF; border: 0; box-shadow: var(--elev-pressed); margin-bottom: var(--s-2); border-radius: var(--r-sm); padding: var(--s-1); }
 /* Native select popups on Windows can render web fonts blank. Use system fonts and explicit colours there (dark clay palette). */
 select, select option, select optgroup { font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
@@ -491,13 +514,13 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
 
 /* Phone: exercise finder spacing (search input -> machine dropdown -> favourite star). */
 @media (max-width: 479px) {
-  .field { gap: var(--s-3); }
+  .field { gap: var(--s-4); }
   .field .hint:empty { display: none; }
-  .ex-row { gap: var(--s-3); margin-top: 0; }
+  .ex-row { gap: var(--s-5); margin-top: var(--s-4); margin-bottom: var(--s-2); }
 }
 
 /* Phone: bigger exercise photos (Log form + favourites cards). */
 @media (max-width: 479px) {
-  .ex-photo { height: 260px; padding: var(--s-3); }
+  .ex-photo { padding: var(--s-3); }
   .fav-photo { height: 180px; }
 }

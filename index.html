@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Elevation: Gym Log and Weekly Score</title>
+  <title>Elev tracker: Gym Log and Weekly Score</title>
   <meta name="description" content="Log sets in kg or lbs, chart progress per machine, and get a weekly Progress Score. Free. Your data stays in your own Google Sheet.">
   <link rel="canonical" href="https://almanalaysay93-gif.github.io/elevation-tracker/">
-  <meta property="og:title" content="Elevation: Gym Log and Weekly Score">
+  <meta property="og:title" content="Elev tracker: Gym Log and Weekly Score">
   <meta property="og:description" content="Log sets, chart each machine, and get a weekly verdict. Free, with data in your own Google Sheet.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://almanalaysay93-gif.github.io/elevation-tracker/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Elevation: Gym Log and Weekly Score">
+  <meta name="twitter:title" content="Elev tracker: Gym Log and Weekly Score">
   <meta name="twitter:description" content="Log sets, chart each machine, and get a weekly verdict. Free, with data in your own Google Sheet.">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Elevation",
+    "name": "Elev tracker",
     "description": "Log sets in kg or lbs, chart progress per machine, and get a weekly Progress Score. Free. Your data stays in your own Google Sheet.",
     "url": "https://almanalaysay93-gif.github.io/elevation-tracker/",
     "applicationCategory": "HealthApplication",
@@ -47,6 +47,7 @@
   </script>
 </head>
 <body>
+  <div class="gym-scene" aria-hidden="true"></div>
   <svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
 <symbol id="i-add" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></symbol>
 <symbol id="i-calendar_today" viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></symbol>
@@ -73,7 +74,7 @@
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="top">
-    <a class="brand" href="#log"><span class="brand-mark" aria-hidden="true">▲</span> ELEVATION</a>
+    <a class="brand" href="#log"><span class="brand-mark" aria-hidden="true">▲</span> Elev tracker</a>
     <div class="top-actions">
       <span class="sync" id="syncDot" role="img" aria-label="Demo" data-state="demo"></span>
       <button type="button" class="chip" id="unitToggle" aria-label="Display unit">kg</button>
@@ -103,8 +104,8 @@
 
   <main id="main" tabindex="-1">
     <div id="status" class="status" role="status" aria-live="polite"></div>
-    <noscript><p class="empty">Elevation is a free gym log and weekly score app. It needs JavaScript to run. Turn JavaScript on in your browser to log sets and see your progress.</p></noscript>
-    <div id="view" class="view"><h1 class="sr-only">Elevation: Gym Log and Weekly Score</h1></div>
+    <noscript><p class="empty">Elev tracker is a free gym log and weekly score app. It needs JavaScript to run. Turn JavaScript on in your browser to log sets and see your progress.</p></noscript>
+    <div id="view" class="view"><h1 class="sr-only">Elev tracker: Gym Log and Weekly Score</h1></div>
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden>
@@ -129,5 +130,6 @@
 
   <script src="equipment.js" defer></script>
   <script src="app.js" defer></script>
+  <script type="module" src="gym-background.js"></script>
 </body>
 </html>

@@ -115,12 +115,31 @@ function doPost(e) {
     else if (p.action === 'deleteSet') deleteSet_(p.id);
     else if (p.action === 'addExercise') addExercise_(p);
     else if (p.action === 'toggleFav') toggleFav_(p.name);
+    else if (p.action === 'setSplit') setSplit_(p);
     else throw new Error('Unknown action: ' + p.action);
     return json_({ ok: true, state: state_() });
   } catch (err) {
     return json_({ ok: false, error: String(err.message || err) });
   } finally {
     lock.releaseLock();
+  }
+}
+
+/* Edit one day of the Schedule tab from the app. Creates the day's row if it is missing. */
+function setSplit_(p) {
+  const DAYS_ = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const SPLITS_ = ['Upper', 'Lower', 'Arms & Shoulders', 'Rest'];
+  if (DAYS_.indexOf(p.day) < 0) throw new Error('Unknown day: ' + p.day);
+  if (SPLITS_.indexOf(p.split) < 0) throw new Error('Split must be one of ' + SPLITS_.join(', '));
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Schedule');
+  const last = sh.getLastRow();
+  const days = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues() : [];
+  const idx = days.findIndex(r => r[0] === p.day);
+  if (idx >= 0) {
+    sh.getRange(idx + 2, 2).setValue(p.split);
+    sh.getRange(idx + 2, 3).setValue(p.split !== 'Rest');
+  } else {
+    sh.appendRow([p.day, p.split, p.split !== 'Rest']);
   }
 }
 
