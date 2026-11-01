@@ -110,6 +110,9 @@
   const apiUrl = () => ls.get('apiUrl', '');
   const isDemo = () => !apiUrl();
 
+  const IMG = {}; (window.EQUIPMENT || []).forEach(r => { if (r[3]) IMG[r[0]] = r[3]; });
+  const exImg = (name, cls) => IMG[name] ? `<img class="${cls}" src="${esc(IMG[name])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">` : '';
+
   function demoSeed() {
     return {
       exercises: (window.EQUIPMENT || [])
@@ -493,6 +496,7 @@
             <select id="fEx">${exOptions(d.exercise)}</select>
             ${ex ? favButton(ex.Name, ex.Favorite, ui.popFav === ex.Name ? 'pop' : '') : ''}
           </div>
+          ${ex ? exImg(ex.Name, 'ex-photo') : ''}
         </div>
 
         <div class="strip" aria-live="polite">
@@ -602,6 +606,7 @@
           ? `<div class="grid">${list.map(e => {
               const s = exStats(e.Name);
               return `<button type="button" class="fav-card" data-goto="${esc(e.Name)}" aria-label="Log ${esc(e.Name)}">
+                ${exImg(e.Name, 'fav-photo')}
                 <span class="name">${esc(e.Name)}</span>
                 <span class="mach">${esc(e.Machine)}</span>
                 <span class="mono">${s.last ? `Last: ${s.last.Reps} × ${esc(both(s.last))}` : 'Not logged yet'}</span>
