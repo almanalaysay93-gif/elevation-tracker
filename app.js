@@ -99,6 +99,7 @@
       date: today(),
       exercise: ls.get('lastEx', ''),
       group: '',
+      q: '',
       reps: '',
       weight: '',
       entryUnit: ls.get('entryUnit', 'kg'),
@@ -412,13 +413,29 @@
   }
 
   /* ---------- shared markup ---------- */
-  function exOptions(sel, only) {
+  // Machines matching the typed search (name or machine model) within the chosen split.
+  function exMatches(q, only) {
+    const needle = (q || '').trim().toLowerCase();
+    return state.exercises.filter(e =>
+      (!only || e.Group === only) &&
+      (!needle || (e.Name + ' ' + (e.Machine || '')).toLowerCase().includes(needle)));
+  }
+
+  function exOptions(sel, only, q) {
+    const pool = exMatches(q, only);
     const block = (label, list) => list.length
       ? `<optgroup label="${esc(label)}">${list.map(e => `<option value="${esc(e.Name)}"${e.Name === sel ? ' selected' : ''}>${e.Favorite ? '★ ' : ''}${esc(e.Name)}</option>`).join('')}</optgroup>`
       : '';
-    if (only) return block(only, state.exercises.filter(e => e.Group === only));
-    const other = state.exercises.filter(e => !GROUPS.includes(e.Group));
-    return GROUPS.map(g => block(g, state.exercises.filter(e => e.Group === g))).join('') + block('Other', other);
+    if (only) return block(only, pool);
+    const other = pool.filter(e => !GROUPS.includes(e.Group));
+    return GROUPS.map(g => block(g, pool.filter(e => e.Group === g))).join('') + block('Other', other);
+  }
+
+  function searchHint(d) {
+    const q = (d.q || '').trim();
+    if (!q) return '';
+    const n = exMatches(q, d.group).length;
+    return n ? `${n} match${n === 1 ? '' : 'es'}` : `No machine matches “${esc(q)}”`;
   }
 
   function favButton(name, fav, extraClass) {
@@ -498,8 +515,11 @@
         </div>
         <div class="field">
           <label for="fEx">Exercise / machine</label>
+          <input id="fSearch" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false"
+            placeholder="Type a machine name to find it" aria-describedby="fMatch" value="${esc(d.q || '')}">
+          <p class="hint" id="fMatch" aria-live="polite">${searchHint(d)}</p>
           <div class="ex-row">
-            <select id="fEx">${exOptions(d.exercise, d.group)}</select>
+            <select id="fEx">${exOptions(d.exercise, d.group, d.q)}</select>
             ${ex ? favButton(ex.Name, ex.Favorite, ui.popFav === ex.Name ? 'pop' : '') : ''}
           </div>
           ${ex ? exImg(ex.Name, 'ex-photo') : ''}
@@ -1134,6 +1154,7 @@
     if (id === 'fEx') { setExercise(e.target.value); paint(); }
     else if (id === 'fGroup') {
       ui.draft.group = e.target.value;
+      ui.draft.q = '';
       const inGroup = state.exercises.find(x => x.Name === ui.draft.exercise && (!ui.draft.group || x.Group === ui.draft.group));
       if (!inGroup) {
         const first = state.exercises.find(x => !ui.draft.group || x.Group === ui.draft.group);
@@ -1150,7 +1171,29 @@
     else if (id === 'fW') { ui.draft.weight = e.target.value; updateLogLive(); }
     else if (id === 'fNotes') ui.draft.notes = e.target.value;
     else if (id === 'favSearch') { ui.favQ = e.target.value; renderFavBody(); }
+    else if (id === 'fSearch') applySearch(e.target.value, false);
   });
+
+  // Enter in the machine search picks the first match instead of submitting the form.
+  document.addEventListener('keydown', e => {
+    if (e.target.id === 'fSearch' && e.key === 'Enter') { e.preventDefault(); applySearch(e.target.value, true); }
+  });
+
+  function applySearch(q, pickFirst) {
+    const d = ui.draft;
+    d.q = q;
+    const list = exMatches(q, d.group);
+    if (!list.length) { $('#fMatch').textContent = searchHint(d); return; }
+    if (pickFirst || !list.some(x => x.Name === d.exercise)) {
+      setExercise(list[0].Name);
+      paint();
+      const s = $('#fSearch');
+      if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
+      return;
+    }
+    $('#fEx').innerHTML = exOptions(d.exercise, d.group, q);
+    $('#fMatch').textContent = searchHint(d);
+  }
 
   document.addEventListener('submit', e => {
     e.preventDefault();
