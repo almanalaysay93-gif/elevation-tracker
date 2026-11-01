@@ -75,6 +75,15 @@
 
   <header class="top">
     <a class="brand" href="#log"><span class="brand-mark" aria-hidden="true">▲</span> Elev tracker</a>
+    <nav class="nav" aria-label="Main">
+      <span class="rail" aria-hidden="true"></span>
+      <a href="#log" data-route="log"><span class="pl pl-l" aria-hidden="true"><i></i><i></i><i></i></span><svg class="i" aria-hidden="true" focusable="false"><use href="#i-add"/></svg><span>Log</span><span class="pl pl-r" aria-hidden="true"><i></i><i></i><i></i></span></a>
+      <a href="#favorites" data-route="favorites"><span class="pl pl-l" aria-hidden="true"><i></i><i></i><i></i></span><svg class="i" aria-hidden="true" focusable="false"><use href="#i-star"/></svg><span>Favs</span><span class="pl pl-r" aria-hidden="true"><i></i><i></i><i></i></span></a>
+      <a href="#progress" data-route="progress"><span class="pl pl-l" aria-hidden="true"><i></i><i></i><i></i></span><svg class="i" aria-hidden="true" focusable="false"><use href="#i-show_chart"/></svg><span>Charts</span><span class="pl pl-r" aria-hidden="true"><i></i><i></i><i></i></span></a>
+      <a href="#calendar" data-route="calendar"><span class="pl pl-l" aria-hidden="true"><i></i><i></i><i></i></span><svg class="i" aria-hidden="true" focusable="false"><use href="#i-calendar_today"/></svg><span class="lbl-long">Calendar</span><span class="lbl-short">Cal</span><span class="pl pl-r" aria-hidden="true"><i></i><i></i><i></i></span></a>
+      <a href="#week" data-route="week"><span class="pl pl-l" aria-hidden="true"><i></i><i></i><i></i></span><svg class="i" aria-hidden="true" focusable="false"><use href="#i-insights"/></svg><span>Week</span><span class="pl pl-r" aria-hidden="true"><i></i><i></i><i></i></span></a>
+      <a href="#settings" data-route="settings" class="nav-setup"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-settings"/></svg><span>Setup</span></a>
+    </nav>
     <div class="top-actions">
       <span class="sync" id="syncDot" role="img" aria-label="Demo" data-state="demo"></span>
       <button type="button" class="chip" id="unitToggle" aria-label="Display unit">kg</button>
@@ -92,15 +101,6 @@
     <span>Demo mode. Data stays on this device. Connect your sheet in Setup.</span>
   </div>
 
-  <nav class="nav" aria-label="Main">
-    <span class="rail" aria-hidden="true"></span>
-    <a href="#log" data-route="log"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-add"/></svg><span>Log</span></a>
-    <a href="#favorites" data-route="favorites"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-star"/></svg><span>Favs</span></a>
-    <a href="#progress" data-route="progress"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-show_chart"/></svg><span>Charts</span></a>
-    <a href="#calendar" data-route="calendar"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-calendar_today"/></svg><span class="lbl-long">Calendar</span><span class="lbl-short">Cal</span></a>
-    <a href="#week" data-route="week"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-insights"/></svg><span>Week</span></a>
-    <a href="#settings" data-route="settings" class="nav-setup"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-settings"/></svg><span>Setup</span></a>
-  </nav>
 
   <main id="main" tabindex="-1">
     <div id="status" class="status" role="status" aria-live="polite"></div>

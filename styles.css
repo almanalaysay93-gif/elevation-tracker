@@ -455,21 +455,54 @@ details summary::-webkit-details-marker { display: none; }
 }
 
 @media (min-width: 1024px) {
-  body { padding-bottom: var(--s-7); padding-left: var(--rail-w); }
-  .top { left: var(--rail-w); padding: 0 var(--s-5); }
-  .top { position: sticky; }
+  body { padding-bottom: var(--s-7); }
+  .top { height: 84px; padding: 0 var(--s-6); gap: var(--s-5); }
+  /* Desktop: the nav lives in the header row, beside the brand. Flat static links, no borders or shadows, like the sets table. */
   .nav {
-    top: 0; bottom: auto; right: auto; width: var(--rail-w); height: 100dvh;
-    padding: var(--s-5) 0 0; display: flex; flex-direction: column; gap: var(--s-1);
-    border-radius: 0 var(--r-lg) var(--r-lg) 0;
-    box-shadow: inset -1px 0 0 var(--line), 10px 0 24px -14px rgb(0 0 0 / 0.6);
+    position: static; top: auto; left: auto; right: auto; bottom: auto; z-index: auto;
+    width: auto; height: auto; flex: 1; min-width: 0; padding: 0;
+    display: flex; flex-direction: row; justify-content: center; gap: var(--s-3);
+    background: none; border-radius: 0; box-shadow: none;
   }
-  .nav a { flex: none; min-height: 64px; width: 100%; }
-  .nav .rail { display: block; position: absolute; left: 0; top: 0; width: 4px; height: 0; background: var(--accent); border-radius: 0 4px 4px 0; transition: transform var(--dur-base) var(--ease-out); }
-  .nav-setup { display: flex !important; margin-top: auto; }
+  /* Dumbbell: a short bar (link background) with stacked clay plates on each side.
+     Plates are <span class="pl"> groups with three <i> discs each, outermost smallest. */
+  .nav a {
+    position: relative; isolation: isolate;
+    flex: none; width: auto; min-height: 56px; padding: 0 calc(30px + var(--s-3));
+    flex-direction: row; gap: var(--s-3); border-radius: 0;
+    color: var(--text); font-size: var(--fs-base);
+    background: linear-gradient(var(--surface-2), var(--surface-2)) center / 100% 20px no-repeat;
+    border: 0; box-shadow: none;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+    transition: color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  }
+  .nav .pl {
+    position: absolute; top: 0; bottom: 0; z-index: -1;
+    display: flex; align-items: center; gap: 2px;
+  }
+  .nav .pl-l { left: 0; }
+  .nav .pl-r { right: 0; flex-direction: row-reverse; }
+  .nav .pl i {
+    display: block; border-radius: 4px;
+    background: var(--surface-2); box-shadow: var(--elev-btn);
+    transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .nav .pl i:nth-child(1) { width: 6px; height: 24px; }
+  .nav .pl i:nth-child(2) { width: 8px; height: 40px; }
+  .nav .pl i:nth-child(3) { width: 12px; height: 50px; }
+  .nav a:hover { color: var(--accent-text); transform: translateY(-2px); }
+  .nav a:hover .pl i,
+  .nav a[aria-current="page"] .pl i { background: var(--accent-text); }
+  .nav a[aria-current="page"] { color: var(--accent-text); }
+  .nav a[aria-current="page"] .pl i { box-shadow: var(--elev-pressed); }
+  .nav a:active { color: var(--accent-text); transform: scale(var(--motion-press-scale)); }
+  .nav a:active .pl i { box-shadow: var(--elev-pressed); }
+  .nav a .i { display: none; }
+  .nav .rail { display: none; }
+  .nav-setup { display: none !important; }
   main { padding: var(--s-4) var(--s-5) 0; }
   html { scroll-padding-bottom: var(--s-5); }
-  .toast { left: calc(var(--rail-w) + var(--s-5)); right: var(--s-5); bottom: var(--s-5); }
+  .toast { left: var(--s-5); right: var(--s-5); bottom: var(--s-5); }
   .btn.cta { position: static; }
   #setForm { padding-bottom: var(--s-4); }
   .chart { height: 420px; }
@@ -552,4 +585,18 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
 .rv.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .rv, .rv.in { opacity: 1; transform: none; transition: none; }
+}
+
+/* Rolling numbers: each digit is a 0-9 column that rolls up to its value on load/route change. */
+.rn-d { display: inline-block; height: 1em; line-height: 1; overflow: hidden; vertical-align: bottom; }
+.rn-s {
+  display: inline-flex; flex-direction: column; vertical-align: top;
+  transform: translateY(0);
+  transition: transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.rn-s > span { display: block; height: 1em; line-height: 1; }
+.rn-s.go { transform: translateY(calc(var(--n, 0) * -1em)); }
+@media (prefers-reduced-motion: reduce) {
+  .rn-s { transition: none; }
 }

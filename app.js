@@ -116,6 +116,7 @@
   let state = empty();     // base with the outbox applied on top: what the screen shows
   let loading = true;      // first sheet fetch still running
   let justArrived = false; // data just landed after a skeleton: rows should rise in once
+  let rollNext = false;    // post-load paint: roll the numbers once more, since it replaces the view
   let outbox = ls.get('outbox', []);
   let unit = ls.get('unit', 'kg');
   let lastRoute = null;
@@ -980,6 +981,59 @@
     requestAnimationFrame(tick);
   }
 
+  /* ---------- rolling numbers: each digit rolls up from 0 on load (scrollme-style settle) ---------- */
+  function rollNumbers(root) {
+    if (reduced()) return;
+    // Walk text nodes, so numbers inside mixed content (e.g. "5 × 50 kg" beside a tag) roll too.
+    const SKIP = 'svg, input, textarea, select, button, option, script, style, #heroScore, .rn-w';
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) {
+      const n = walker.currentNode;
+      if (!/\d/.test(n.nodeValue)) continue;
+      const p = n.parentElement;
+      if (!p || p.closest(SKIP)) continue;
+      nodes.push(n);
+    }
+    // Numbers only: skip digits glued to letters (e1RM, G6803) so codes and labels stay still.
+    const RUN = /(?<![A-Za-z\d])[+\-−]?\d+(?:[.,:]\d+)*/g;
+    let token = 0;
+    let rolled = false;
+    nodes.forEach(n => {
+      const text = n.nodeValue;
+      const matches = [...text.matchAll(RUN)];
+      if (!matches.length) return;
+      let html = '', last = 0;
+      matches.forEach(m => {
+        html += esc(text.slice(last, m.index));
+        const i = Math.min(token++, 14); // cap stagger so long lists settle together
+        [...m[0]].forEach(ch => {
+          if (!/\d/.test(ch)) { html += `<span class="rn-p">${esc(ch)}</span>`; return; }
+          html += `<span class="rn-d"><span class="rn-s" style="--i:${i};--n:${ch}">${'0123456789'.split('').map(c => `<span>${c}</span>`).join('')}</span></span>`;
+        });
+        last = m.index + m[0].length;
+      });
+      html += esc(text.slice(last));
+      const wrap = document.createElement('span');
+      wrap.className = 'rn-w';
+      wrap.innerHTML = `<span aria-hidden="true">${html}</span><span class="sr-only">${esc(text)}</span>`;
+      n.replaceWith(wrap);
+      rolled = true;
+    });
+    if (!rolled) return;
+    void root.offsetWidth; // flush styles so the transition starts from 0
+    // Roll each number when it scrolls into view, so cards below the fold or inside reveals are not spent off-screen.
+    const wraps = [...root.querySelectorAll('.rn-w')];
+    const go = w => w.querySelectorAll('.rn-s').forEach(s => s.classList.add('go'));
+    if (!('IntersectionObserver' in window)) { requestAnimationFrame(() => wraps.forEach(go)); return; }
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      io.unobserve(en.target);
+      requestAnimationFrame(() => go(en.target));
+    }), { threshold: 0.2 });
+    requestAnimationFrame(() => wraps.forEach(w => io.observe(w)));
+  }
+
   /* ---------- actions ---------- */
   function syncDraft() {
     const d = ui.draft;
@@ -1220,6 +1274,8 @@
       }
     }
     if (!skel) armReveals(view);
+    if (!skel && (changed || arrive || rollNext)) rollNumbers(view);
+    if (!skel) rollNext = false;
     ui.popFav = '';
   }
 
@@ -1348,6 +1404,7 @@
       const pick = names.includes(d.exercise) ? d.exercise : (names.includes(last) ? last : names[0]);
       if (pick) setExercise(pick);
     }
+    rollNext = true;
     paint();
   });
 
