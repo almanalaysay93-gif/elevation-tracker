@@ -491,7 +491,7 @@ select optgroup { color: #FF5A62; background-color: #111111; font-weight: 700; }
 
 /* Phone: exercise finder spacing (search input -> machine dropdown -> favourite star). */
 @media (max-width: 479px) {
-  .field { gap: var(--s-4); }
+  .field { gap: var(--s-3); }
   .field .hint:empty { display: none; }
-  .ex-row { gap: var(--s-4); margin-top: var(--s-1); }
+  .ex-row { gap: var(--s-3); margin-top: 0; }
 }
