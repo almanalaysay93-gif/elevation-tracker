@@ -42,8 +42,8 @@
   <link rel="stylesheet" href="styles.css">
   <script>
     document.documentElement.dataset.theme = 'dark'; try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}
-    // Demo mode = no sheet URL saved (same rule as isDemo() in app.js). Set before first paint so the banner never shifts layout.
-    try { document.documentElement.dataset.demo = JSON.parse(localStorage.getItem('apiUrl') || 'null') ? 'off' : 'on'; } catch (e) { document.documentElement.dataset.demo = 'on'; }
+    // Demo mode is off: app.js ships a built-in sheet URL (DEFAULT_API_URL), so every device connects with no Setup. Set before first paint.
+    document.documentElement.dataset.demo = 'off';
   </script>
 </head>
 <body>
