@@ -257,6 +257,9 @@ select option, select optgroup { background: var(--surface); color: var(--text);
 }
 .sets li:last-child { border-bottom: 0; }
 @media (max-width: 479px) {
+  .card { margin: 0 0 var(--s-6); }
+  .kpi-grid, .grid, .two { gap: var(--s-5); }
+  .card + .card { margin-top: 0; }
   .sets li { min-height: 60px; padding: var(--s-5) 0; gap: var(--s-4); }
   .sets li > span:first-child { line-height: 1.4; }
 }
